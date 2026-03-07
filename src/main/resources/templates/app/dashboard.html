@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}"
+      lang="pt-BR">
+<head><title>Dashboard</title></head>
+<body>
+
+<div layout:fragment="header">
+    <h2 class="text-lg font-semibold text-neutral-900">Dashboard</h2>
+    <p class="text-sm text-neutral-700">Olá, <span th:text="${userName}"></span></p>
+</div>
+
+<div layout:fragment="content">
+
+    <!-- Cards resumo -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div class="bg-surface rounded-2xl shadow-card p-6">
+            <p class="text-sm text-neutral-700 font-medium">Saldo Total</p>
+            <p class="text-2xl font-bold text-neutral-900 mt-2"
+               th:text="${#numbers.formatDecimal(dashboard.totalBalance(), 1, 'POINT', 2, 'COMMA')}"></p>
+            <span class="text-xs text-neutral-700">Todas as contas</span>
+        </div>
+
+        <div class="bg-surface rounded-2xl shadow-card p-6">
+            <p class="text-sm text-neutral-700 font-medium">Receitas (mês)</p>
+            <p class="text-2xl font-bold text-secondary mt-2"
+               th:text="'R$ ' + ${#numbers.formatDecimal(dashboard.totalIncome(), 1, 'POINT', 2, 'COMMA')}"></p>
+            <span class="text-xs text-neutral-700">Mês atual</span>
+        </div>
+
+        <div class="bg-surface rounded-2xl shadow-card p-6">
+            <p class="text-sm text-neutral-700 font-medium">Despesas (mês)</p>
+            <p class="text-2xl font-bold text-danger mt-2"
+               th:text="'R$ ' + ${#numbers.formatDecimal(dashboard.totalExpense(), 1, 'POINT', 2, 'COMMA')}"></p>
+            <span class="text-xs text-neutral-700">Mês atual</span>
+        </div>
+
+        <div class="bg-surface rounded-2xl shadow-card p-6">
+            <p class="text-sm text-neutral-700 font-medium">Balanço (mês)</p>
+            <p class="text-2xl font-bold mt-2"
+               th:classappend="${dashboard.monthlyBalance().signum() >= 0} ? 'text-secondary' : 'text-danger'"
+               th:text="'R$ ' + ${#numbers.formatDecimal(dashboard.monthlyBalance(), 1, 'POINT', 2, 'COMMA')}"></p>
+            <span class="text-xs text-neutral-700">Receitas - Despesas</span>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Top categorias de despesa -->
+        <div class="bg-surface rounded-2xl shadow-card p-6">
+            <h3 class="font-semibold text-neutral-900 mb-4">Top Despesas por Categoria</h3>
+            <div th:if="${dashboard.topExpenseCategories().isEmpty()}" class="text-sm text-neutral-700 py-4">
+                Nenhuma despesa registrada este mês.
+            </div>
+            <div th:unless="${dashboard.topExpenseCategories().isEmpty()}" class="space-y-3">
+                <div th:each="entry : ${dashboard.topExpenseCategories()}"
+                     class="flex items-center justify-between py-2 border-b border-neutral-200 last:border-0">
+                    <span class="text-sm text-neutral-900 font-medium" th:text="${entry.key}"></span>
+                    <span class="text-sm font-semibold text-danger"
+                          th:text="'R$ ' + ${#numbers.formatDecimal(entry.value, 1, 'POINT', 2, 'COMMA')}"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Transações recentes -->
+        <div class="bg-surface rounded-2xl shadow-card p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="font-semibold text-neutral-900">Transações Recentes</h3>
+                <a th:href="@{/app/transactions}" class="text-sm text-primary-600 hover:underline font-medium">Ver todas</a>
+            </div>
+            <div th:if="${#lists.isEmpty(recentTransactions)}" class="text-sm text-neutral-700 py-4">
+                Nenhuma transação registrada.
+            </div>
+            <div th:unless="${#lists.isEmpty(recentTransactions)}" class="space-y-3">
+                <div th:each="tx : ${recentTransactions}"
+                     class="flex items-center justify-between py-2 border-b border-neutral-200 last:border-0">
+                    <div>
+                        <p class="text-sm font-medium text-neutral-900" th:text="${tx.description} ?: 'Sem descrição'"></p>
+                        <p class="text-xs text-neutral-700">
+                            <span th:text="${tx.category?.name} ?: '—'"></span> ·
+                            <span th:text="${#temporals.format(tx.date, 'dd/MM')}"></span>
+                        </p>
+                    </div>
+                    <span class="text-sm font-semibold"
+                          th:classappend="${tx.type.name() == 'CREDIT'} ? 'text-secondary' : 'text-danger'"
+                          th:text="${(tx.type.name() == 'CREDIT' ? '+' : '-') + ' R$ ' + #numbers.formatDecimal(tx.amount, 1, 'POINT', 2, 'COMMA')}">
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contas -->
+    <div class="mt-6 bg-surface rounded-2xl shadow-card p-6" th:if="${!#lists.isEmpty(accounts)}">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="font-semibold text-neutral-900">Suas Contas</h3>
+            <a th:href="@{/app/accounts}" class="text-sm text-primary-600 hover:underline font-medium">Gerenciar</a>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div th:each="account : ${accounts}"
+                 class="border border-neutral-200 rounded-xl p-4 flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-neutral-900" th:text="${account.name}"></p>
+                    <p class="text-xs text-neutral-700" th:text="${account.type}"></p>
+                </div>
+                <span class="font-semibold text-sm"
+                      th:classappend="${account.balance.signum() >= 0} ? 'text-secondary' : 'text-danger'"
+                      th:text="'R$ ' + ${#numbers.formatDecimal(account.balance, 1, 'POINT', 2, 'COMMA')}">
+                </span>
+            </div>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

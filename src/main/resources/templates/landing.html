@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}"
+      lang="pt-BR">
+<head>
+    <title>MindCash — Controle Financeiro Inteligente</title>
+</head>
+<body>
+<div layout:fragment="public-content">
+
+    <!-- Hero -->
+    <div class="min-h-screen bg-gradient-to-br from-primary via-primary-600 to-primary flex flex-col">
+        <nav class="max-w-6xl mx-auto w-full px-6 py-5 flex items-center justify-between">
+            <span class="text-white text-xl font-bold tracking-tight">MindCash</span>
+            <div class="flex items-center gap-4">
+                <a th:href="@{/auth/login}" class="text-white/80 hover:text-white text-sm font-medium transition-colors">Entrar</a>
+                <a th:href="@{/auth/register}" class="bg-accent text-neutral-900 px-5 py-2 rounded-card text-sm font-semibold hover:bg-yellow-400 transition-colors">
+                    Criar conta
+                </a>
+            </div>
+        </nav>
+
+        <div class="flex-1 flex items-center">
+            <div class="max-w-6xl mx-auto w-full px-6 grid lg:grid-cols-2 gap-16 items-center">
+                <div>
+                    <h1 class="text-4xl lg:text-5xl font-bold text-white leading-tight">
+                        Transforme seus registros financeiros em
+                        <span class="text-accent">decisões inteligentes</span>
+                    </h1>
+                    <p class="text-lg text-white/70 mt-6 leading-relaxed">
+                        Controle contas, registre transações, acompanhe metas e veja seu patrimônio crescer — tudo em um só lugar.
+                    </p>
+                    <div class="mt-8 flex gap-4">
+                        <a th:href="@{/auth/register}" class="bg-accent text-neutral-900 px-8 py-3 rounded-card font-semibold hover:bg-yellow-400 transition-colors">
+                            Começar grátis
+                        </a>
+                        <a href="#features" class="border border-white/30 text-white px-8 py-3 rounded-card font-medium hover:bg-white/10 transition-colors">
+                            Saiba mais
+                        </a>
+                    </div>
+                </div>
+
+                <div class="hidden lg:block">
+                    <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/10">
+                        <div class="space-y-4">
+                            <div class="bg-white/10 rounded-xl p-4 flex items-center justify-between">
+                                <span class="text-white/80 text-sm">Saldo total</span>
+                                <span class="text-white font-bold text-lg">R$ 12.450,00</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="bg-secondary/20 rounded-xl p-4">
+                                    <span class="text-secondary text-xs font-medium">Receitas</span>
+                                    <p class="text-white font-bold mt-1">R$ 8.500,00</p>
+                                </div>
+                                <div class="bg-danger/20 rounded-xl p-4">
+                                    <span class="text-red-300 text-xs font-medium">Despesas</span>
+                                    <p class="text-white font-bold mt-1">R$ 3.200,00</p>
+                                </div>
+                            </div>
+                            <div class="bg-white/10 rounded-xl p-4">
+                                <span class="text-white/60 text-xs">Top categoria</span>
+                                <div class="flex items-center justify-between mt-2">
+                                    <span class="text-white text-sm">Alimentação</span>
+                                    <span class="text-accent font-semibold text-sm">R$ 1.230,00</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features -->
+    <section id="features" class="py-24 bg-surface">
+        <div class="max-w-6xl mx-auto px-6">
+            <h2 class="text-3xl font-bold text-center text-neutral-900">Tudo que você precisa para organizar suas finanças</h2>
+            <p class="text-neutral-700 text-center mt-3 max-w-2xl mx-auto">
+                Funcionalidades pensadas para quem quer simplicidade com controle total.
+            </p>
+
+            <div class="mt-16 grid md:grid-cols-3 gap-8">
+                <div class="bg-neutral-200/50 rounded-2xl p-6">
+                    <div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
+                        <i class="lucide lucide-wallet text-primary text-xl"></i>
+                    </div>
+                    <h3 class="font-semibold mt-4 text-neutral-900">Gestão de Contas</h3>
+                    <p class="text-sm text-neutral-700 mt-2">Organize contas bancárias, carteiras, cartões e corretoras em um só lugar.</p>
+                </div>
+                <div class="bg-neutral-200/50 rounded-2xl p-6">
+                    <div class="w-12 h-12 bg-secondary/10 rounded-xl flex items-center justify-center">
+                        <i class="lucide lucide-arrow-left-right text-secondary text-xl"></i>
+                    </div>
+                    <h3 class="font-semibold mt-4 text-neutral-900">Transações Detalhadas</h3>
+                    <p class="text-sm text-neutral-700 mt-2">Registre receitas, despesas e transferências com categorização automática.</p>
+                </div>
+                <div class="bg-neutral-200/50 rounded-2xl p-6">
+                    <div class="w-12 h-12 bg-accent/10 rounded-xl flex items-center justify-center">
+                        <i class="lucide lucide-bar-chart-3 text-accent text-xl"></i>
+                    </div>
+                    <h3 class="font-semibold mt-4 text-neutral-900">Dashboard Inteligente</h3>
+                    <p class="text-sm text-neutral-700 mt-2">Visualize saldo, gastos, receitas e top categorias em tempo real.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="py-16 bg-primary">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+            <h2 class="text-3xl font-bold text-white">Comece a controlar suas finanças hoje</h2>
+            <p class="text-white/70 mt-3">Cadastre-se gratuitamente e tenha controle total do seu dinheiro.</p>
+            <a th:href="@{/auth/register}" class="mt-8 inline-block bg-accent text-neutral-900 px-10 py-3 rounded-card font-semibold hover:bg-yellow-400 transition-colors">
+                Criar minha conta
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-neutral-900 text-white/50 py-8">
+        <div class="max-w-6xl mx-auto px-6 text-center text-sm">
+            &copy; 2026 MindCash. Controle, consciência e crescimento patrimonial.
+        </div>
+    </footer>
+</div>
+</body>
+</html>

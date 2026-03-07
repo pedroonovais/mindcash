@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}"
+      lang="pt-BR">
+<head><title>Contas</title></head>
+<body>
+
+<div layout:fragment="header">
+    <h2 class="text-lg font-semibold text-neutral-900">Contas</h2>
+</div>
+
+<div layout:fragment="content">
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+        <!-- Lista de contas -->
+        <div class="lg:col-span-2">
+            <div th:if="${#lists.isEmpty(accounts)}" class="bg-surface rounded-2xl shadow-card p-8 text-center">
+                <p class="text-neutral-700">Nenhuma conta cadastrada. Crie sua primeira conta ao lado.</p>
+            </div>
+
+            <div th:unless="${#lists.isEmpty(accounts)}" class="space-y-4">
+                <div th:each="account : ${accounts}"
+                     class="bg-surface rounded-2xl shadow-card p-6 flex items-center justify-between">
+                    <div>
+                        <h3 class="font-semibold text-neutral-900" th:text="${account.name}"></h3>
+                        <div class="flex items-center gap-3 mt-1">
+                            <span class="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium"
+                                  th:text="${account.type}"></span>
+                            <span class="text-xs text-neutral-700" th:text="${account.currency}"></span>
+                        </div>
+                    </div>
+                    <div class="text-right flex items-center gap-4">
+                        <div>
+                            <p class="font-bold text-lg"
+                               th:classappend="${account.balance.signum() >= 0} ? 'text-secondary' : 'text-danger'"
+                               th:text="'R$ ' + ${#numbers.formatDecimal(account.balance, 1, 'POINT', 2, 'COMMA')}">
+                            </p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <a th:href="@{/app/accounts/{id}/edit(id=${account.id})}"
+                               class="text-neutral-700 hover:text-primary transition-colors p-1" title="Editar">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
+                            </a>
+                            <form th:action="@{/app/accounts/{id}/delete(id=${account.id})}" method="post"
+                                  onsubmit="return confirm('Deseja excluir esta conta?');">
+                                <button type="submit" class="text-neutral-700 hover:text-danger transition-colors p-1" title="Excluir">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulário de criação -->
+        <div>
+            <div class="bg-surface rounded-2xl shadow-card p-6">
+                <h3 class="font-semibold text-neutral-900 mb-4">Nova Conta</h3>
+
+                <form th:action="@{/app/accounts}" th:object="${accountRequest}" method="post" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-neutral-700 mb-1">Nome</label>
+                        <input type="text" th:field="*{name}" required
+                               class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-600"/>
+                        <p th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-danger text-xs mt-1"></p>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-neutral-700 mb-1">Tipo</label>
+                        <select th:field="*{type}" required
+                                class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-600">
+                            <option value="">Selecione...</option>
+                            <option th:each="t : ${accountTypes}" th:value="${t}" th:text="${t}"></option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-neutral-700 mb-1">Saldo inicial</label>
+                        <input type="number" step="0.01" th:field="*{initialBalance}"
+                               class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-600"/>
+                    </div>
+
+                    <button type="submit"
+                            class="w-full bg-primary hover:bg-primary-600 text-white py-2.5 rounded-lg text-sm font-semibold transition-colors">
+                        Criar conta
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

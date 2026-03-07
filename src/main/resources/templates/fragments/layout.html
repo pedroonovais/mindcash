@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="pt-BR">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title layout:title-pattern="$CONTENT_TITLE — MindCash">MindCash</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: { DEFAULT: '#1A237E', 600: '#084ED6' },
+                        secondary: '#00B88A',
+                        accent: '#FFB020',
+                        danger: '#E02424',
+                        surface: '#FFFFFF',
+                        neutral: { 200: '#E6EEF8', 700: '#334155', 900: '#0F1724' }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif']
+                    },
+                    borderRadius: { 'card': '8px' },
+                    boxShadow: { 'card': '0 2px 8px rgba(2,6,23,0.06)' }
+                }
+            }
+        }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://unpkg.com/lucide-static@latest/font/lucide.css"/>
+    <style>
+        body { font-family: 'Inter', system-ui, sans-serif; }
+        .sidebar-link.active { background-color: #084ED6; color: white; }
+    </style>
+</head>
+<body class="bg-neutral-200 text-neutral-900 min-h-screen flex">
+
+<!-- Sidebar -->
+<aside sec:authorize="isAuthenticated()" class="w-64 bg-primary text-white min-h-screen flex flex-col fixed left-0 top-0 z-30">
+    <div class="p-6 border-b border-white/10">
+        <h1 class="text-xl font-bold tracking-tight">MindCash</h1>
+        <p class="text-sm text-white/60 mt-1">Gestão Financeira</p>
+    </div>
+
+    <nav class="flex-1 p-4 space-y-1">
+        <a th:href="@{/app/dashboard}"
+           th:classappend="${currentUri != null and #strings.contains(currentUri, '/dashboard')} ? 'active' : ''"
+           class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-white/80 hover:bg-white/10 transition-colors">
+            <i class="lucide lucide-layout-dashboard text-lg"></i> Dashboard
+        </a>
+        <a th:href="@{/app/accounts}"
+           th:classappend="${currentUri != null and #strings.contains(currentUri, '/accounts')} ? 'active' : ''"
+           class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-white/80 hover:bg-white/10 transition-colors">
+            <i class="lucide lucide-wallet text-lg"></i> Contas
+        </a>
+        <a th:href="@{/app/transactions}"
+           th:classappend="${currentUri != null and #strings.contains(currentUri, '/transactions')} ? 'active' : ''"
+           class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-white/80 hover:bg-white/10 transition-colors">
+            <i class="lucide lucide-arrow-left-right text-lg"></i> Transações
+        </a>
+        <a th:href="@{/app/categories}"
+           th:classappend="${currentUri != null and #strings.contains(currentUri, '/categories')} ? 'active' : ''"
+           class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-white/80 hover:bg-white/10 transition-colors">
+            <i class="lucide lucide-tag text-lg"></i> Categorias
+        </a>
+    </nav>
+
+    <div class="p-4 border-t border-white/10">
+        <form th:action="@{/auth/logout}" method="post">
+            <button type="submit" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-white/60 hover:text-white hover:bg-white/10 transition-colors w-full">
+                <i class="lucide lucide-log-out text-lg"></i> Sair
+            </button>
+        </form>
+    </div>
+</aside>
+
+<!-- Conteúdo principal -->
+<main sec:authorize="isAuthenticated()" class="flex-1 ml-64">
+    <header class="bg-surface shadow-card px-8 py-4 flex items-center justify-between sticky top-0 z-20">
+        <div layout:fragment="header">
+            <h2 class="text-lg font-semibold text-neutral-900">MindCash</h2>
+        </div>
+        <div class="flex items-center gap-3">
+            <span class="text-sm text-neutral-700" sec:authentication="name"></span>
+        </div>
+    </header>
+
+    <div class="p-8">
+        <!-- Flash messages -->
+        <div th:if="${success}" class="mb-6 bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-card text-sm flex items-center gap-2">
+            <i class="lucide lucide-check-circle"></i>
+            <span th:text="${success}"></span>
+        </div>
+        <div th:if="${error}" class="mb-6 bg-red-50 border border-red-200 text-danger px-4 py-3 rounded-card text-sm flex items-center gap-2">
+            <i class="lucide lucide-alert-circle"></i>
+            <span th:text="${error}"></span>
+        </div>
+
+        <div layout:fragment="content">
+        </div>
+    </div>
+</main>
+
+<!-- Conteúdo público (sem sidebar) -->
+<main sec:authorize="!isAuthenticated()" class="flex-1">
+    <div layout:fragment="public-content">
+    </div>
+</main>
+
+</body>
+</html>
