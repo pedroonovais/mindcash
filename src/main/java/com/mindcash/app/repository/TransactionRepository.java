@@ -13,6 +13,7 @@ import java.util.Optional;
 
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
 
+    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"category", "account"})
     Page<Transaction> findByUserIdOrderByDateDescCreatedAtDesc(Long userId, Pageable pageable);
 
     Optional<Transaction> findByIdAndUserId(Long id, Long userId);
