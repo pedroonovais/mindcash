@@ -15,13 +15,18 @@ public class DashboardService {
 
     private final AccountService accountService;
     private final TransactionRepository transactionRepository;
+    private final RecurrenceMaterializationService recurrenceMaterializationService;
 
-    public DashboardService(AccountService accountService, TransactionRepository transactionRepository) {
+    public DashboardService(AccountService accountService, TransactionRepository transactionRepository,
+                            RecurrenceMaterializationService recurrenceMaterializationService) {
         this.accountService = accountService;
         this.transactionRepository = transactionRepository;
+        this.recurrenceMaterializationService = recurrenceMaterializationService;
     }
 
     public DashboardData buildDashboard(Long userId) {
+        recurrenceMaterializationService.materializeForCurrentMonth(userId);
+
         LocalDate now = LocalDate.now();
         LocalDate startOfMonth = now.withDayOfMonth(1);
         LocalDate endOfMonth = now.withDayOfMonth(now.lengthOfMonth());

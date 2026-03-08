@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/app-layout :: appLayout('Recorrências — MindCash', ~{::.header}, ~{::.content})}"
+      lang="pt-br">
+<head><title>Recorrências</title></head>
+<body>
+
+<div class="header">
+    <div class="flex items-center justify-between w-full">
+        <h2 class="text-lg font-semibold text-slate-900 dark:text-white">Recorrências</h2>
+        <a th:href="@{/app/transactions/new}"
+           class="bg-accent-emerald hover:bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2">
+            <span class="material-symbols-outlined text-xl">add</span>
+            Nova transação recorrente
+        </a>
+    </div>
+</div>
+
+<div class="content">
+    <p class="text-sm text-slate-600 dark:text-slate-400 mb-4">
+        Transações que se repetem todo mês (ex.: salário) ou por X meses (ex.: parcelas). Ao abrir o dashboard, as recorrências do mês são geradas automaticamente.
+    </p>
+
+    <div th:if="${templates.isEmpty()}" class="bg-white dark:bg-background-dark border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm p-8 text-center">
+        <p class="text-slate-600 dark:text-slate-400">Nenhuma recorrência cadastrada.</p>
+        <a th:href="@{/app/transactions/new}" class="text-accent-emerald font-medium hover:underline text-sm mt-2 inline-block">
+            Cadastre uma transação e marque como recorrente
+        </a>
+    </div>
+
+    <div th:unless="${templates.isEmpty()}" class="bg-white dark:bg-background-dark border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden">
+        <table class="w-full">
+            <thead class="bg-slate-100 dark:bg-slate-800/50">
+                <tr>
+                    <th class="text-left px-6 py-3 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Descrição</th>
+                    <th class="text-left px-6 py-3 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Categoria</th>
+                    <th class="text-left px-6 py-3 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Conta</th>
+                    <th class="text-right px-6 py-3 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Valor</th>
+                    <th class="text-left px-6 py-3 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Tipo</th>
+                    <th class="text-left px-6 py-3 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Próx. mês</th>
+                    <th class="px-6 py-3"></th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-200 dark:divide-slate-800">
+                <tr th:each="t : ${templates.content}" class="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
+                    <td class="px-6 py-4 text-sm text-slate-900 dark:text-white" th:text="${t.description} ?: '—'"></td>
+                    <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400" th:text="${t.category?.name} ?: '—'"></td>
+                    <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400" th:text="${t.account.name}"></td>
+                    <td class="px-6 py-4 text-sm font-semibold text-right"
+                        th:classappend="${t.type.name() == 'CREDIT'} ? 'text-accent-emerald' : 'text-red-500'"
+                        th:text="${(t.type.name() == 'CREDIT' ? '+' : '-') + ' R$ ' + #numbers.formatDecimal(t.amount, 1, 'POINT', 2, 'COMMA')}">
+                    </td>
+                    <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">
+                        <span th:text="${t.recurrenceType.name() == 'MONTHLY'} ? 'Todo mês' : ('Por ' + t.recurrenceCount + ' meses')"></span>
+                    </td>
+                    <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400"
+                        th:text="${t.recurrenceNextYm != null ? #temporals.format(t.recurrenceNextYm, 'MM/yyyy') : 'Encerrada'}"></td>
+                    <td class="px-6 py-4 text-right">
+                        <div class="flex gap-1 justify-end items-center">
+                        <th:block th:if="${t.recurrenceNextYm != null}">
+                            <form th:action="@{/app/recurrences/{id}/cancel(id=${t.id})}" method="post"
+                                  onsubmit="return confirm('Cancelar esta recorrência? Não serão geradas novas transações.');" class="inline">
+                                <button type="submit" class="text-slate-500 hover:text-amber-600 transition-colors p-1" title="Cancelar recorrência">
+                                    <span class="material-symbols-outlined text-lg">pause_circle</span>
+                                </button>
+                            </form>
+                        </th:block>
+                        <form th:action="@{/app/recurrences/{id}/delete(id=${t.id})}" method="post"
+                              onsubmit="return confirm('Excluir esta recorrência? As transações já geradas permanecem.');" class="inline">
+                            <button type="submit" class="text-slate-500 hover:text-red-500 transition-colors p-1" title="Excluir">
+                                <span class="material-symbols-outlined text-lg">delete</span>
+                            </button>
+                        </form>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div th:if="${templates.totalPages > 1}" class="px-6 py-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
+            <span class="text-sm text-slate-600 dark:text-slate-400"
+                  th:text="'Página ' + ${templates.number + 1} + ' de ' + ${templates.totalPages}"></span>
+            <div class="flex gap-2">
+                <a th:if="${templates.number > 0}"
+                   th:href="@{/app/recurrences(page=${templates.number - 1})}"
+                   class="px-3 py-1.5 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800">
+                    Anterior
+                </a>
+                <a th:if="${templates.number < templates.totalPages - 1}"
+                   th:href="@{/app/recurrences(page=${templates.number + 1})}"
+                   class="px-3 py-1.5 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800">
+                    Próxima
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

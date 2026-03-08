@@ -64,6 +64,11 @@
            class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-white/80 hover:bg-white/10 hover:text-accent-emerald transition-colors">
             <span class="material-symbols-outlined text-lg">swap_horiz</span> Transações
         </a>
+        <a th:href="@{/app/recurrences}"
+           th:classappend="${currentUri != null and #strings.contains(currentUri, '/recurrences')} ? 'active' : ''"
+           class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-white/80 hover:bg-white/10 hover:text-accent-emerald transition-colors">
+            <span class="material-symbols-outlined text-lg">replay</span> Recorrências
+        </a>
         <a th:href="@{/app/categories}"
            th:classappend="${currentUri != null and #strings.contains(currentUri, '/categories')} ? 'active' : ''"
            class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-white/80 hover:bg-white/10 hover:text-accent-emerald transition-colors">

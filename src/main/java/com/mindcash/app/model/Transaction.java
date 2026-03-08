@@ -38,6 +38,20 @@ public class Transaction {
     @Column(length = 255)
     private String description;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "recurrence_type", length = 20)
+    private RecurrenceType recurrenceType;
+
+    @Column(name = "recurrence_count")
+    private Integer recurrenceCount;
+
+    @Column(name = "recurrence_next_ym")
+    private LocalDate recurrenceNextYm;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "recurrence_parent_id")
+    private Transaction recurrenceParent;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -82,4 +96,21 @@ public class Transaction {
     public LocalDateTime getCreatedAt() { return createdAt; }
 
     public LocalDateTime getUpdatedAt() { return updatedAt; }
+
+    public RecurrenceType getRecurrenceType() { return recurrenceType; }
+    public void setRecurrenceType(RecurrenceType recurrenceType) { this.recurrenceType = recurrenceType; }
+
+    public Integer getRecurrenceCount() { return recurrenceCount; }
+    public void setRecurrenceCount(Integer recurrenceCount) { this.recurrenceCount = recurrenceCount; }
+
+    public LocalDate getRecurrenceNextYm() { return recurrenceNextYm; }
+    public void setRecurrenceNextYm(LocalDate recurrenceNextYm) { this.recurrenceNextYm = recurrenceNextYm; }
+
+    public Transaction getRecurrenceParent() { return recurrenceParent; }
+    public void setRecurrenceParent(Transaction recurrenceParent) { this.recurrenceParent = recurrenceParent; }
+
+    /** Indica se esta linha é um modelo de recorrência (não entra em saldo nem listagem de transações). */
+    public boolean isRecurrenceTemplate() {
+        return recurrenceType != null && recurrenceParent == null;
+    }
 }
