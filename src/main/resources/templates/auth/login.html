@@ -1,72 +1,57 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}"
+      lang="pt-br">
 <head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Login — MindCash</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: { DEFAULT: '#1A237E', 600: '#084ED6' },
-                        secondary: '#00B88A',
-                        accent: '#FFB020',
-                        danger: '#E02424',
-                        neutral: { 200: '#E6EEF8', 700: '#334155', 900: '#0F1724' }
-                    }
-                }
-            }
-        }
-    </script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
-    <style>body { font-family: 'Inter', sans-serif; }</style>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-primary via-primary-600 to-primary flex items-center justify-center p-4">
-
-<div class="w-full max-w-md">
-    <div class="text-center mb-8">
-        <a th:href="@{/}" class="text-2xl font-bold text-white tracking-tight">MindCash</a>
-        <p class="text-white/60 mt-1 text-sm">Acesse sua conta</p>
-    </div>
-
-    <div class="bg-white rounded-2xl shadow-xl p-8">
-        <h2 class="text-xl font-semibold text-neutral-900 mb-6">Login</h2>
-
-        <div th:if="${param.error}" class="mb-4 bg-red-50 border border-red-200 text-danger px-4 py-3 rounded-lg text-sm">
-            E-mail ou senha inválidos.
-        </div>
-        <div th:if="${param.logout}" class="mb-4 bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg text-sm">
-            Logout realizado com sucesso.
-        </div>
-        <div th:if="${success}" class="mb-4 bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg text-sm">
-            <span th:text="${success}"></span>
+<body>
+<div layout:fragment="public-content" class="min-h-screen flex items-center justify-center p-4 bg-background-light dark:bg-background-dark">
+    <div class="w-full max-w-md">
+        <div class="text-center mb-8">
+            <a th:href="@{/}" class="flex items-center justify-center">
+                <img th:src="@{/img/logo.png}" alt="MindCash" class="h-12 w-auto object-contain"/>
+            </a>
+            <p class="text-slate-600 dark:text-slate-400 mt-1 text-sm">Acesse sua conta</p>
         </div>
 
-        <form th:action="@{/auth/login}" method="post" class="space-y-5">
-            <div>
-                <label for="username" class="block text-sm font-medium text-neutral-700 mb-1.5">E-mail</label>
-                <input type="email" id="username" name="username" required autocomplete="email"
-                       class="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-600 focus:border-transparent transition"/>
+        <div class="bg-white dark:bg-background-dark border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl p-8">
+            <h2 class="text-xl font-semibold text-slate-900 dark:text-white mb-6">Login</h2>
+
+            <div th:if="${param.error}" class="mb-4 bg-red-500/10 border border-red-500/20 text-red-800 dark:text-red-200 px-4 py-3 rounded-xl text-sm">
+                E-mail ou senha inválidos.
             </div>
-            <div>
-                <label for="password" class="block text-sm font-medium text-neutral-700 mb-1.5">Senha</label>
-                <input type="password" id="password" name="password" required autocomplete="current-password"
-                       class="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-600 focus:border-transparent transition"/>
+            <div th:if="${param.logout}" class="mb-4 bg-emerald-500/10 border border-emerald-500/20 text-emerald-800 dark:text-emerald-200 px-4 py-3 rounded-xl text-sm">
+                Logout realizado com sucesso.
             </div>
-            <button type="submit"
-                    class="w-full bg-primary hover:bg-primary-600 text-white py-2.5 rounded-lg text-sm font-semibold transition-colors">
-                Entrar
-            </button>
-        </form>
+            <div th:if="${success}" class="mb-4 bg-emerald-500/10 border border-emerald-500/20 text-emerald-800 dark:text-emerald-200 px-4 py-3 rounded-xl text-sm">
+                <span th:text="${success}"></span>
+            </div>
 
-        <p class="text-center text-sm text-neutral-700 mt-6">
-            Não tem conta?
-            <a th:href="@{/auth/register}" class="text-primary-600 font-medium hover:underline">Criar conta</a>
-        </p>
+            <form th:action="@{/auth/login}" method="post" class="space-y-5">
+                <div>
+                    <label for="username" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">E-mail</label>
+                    <input type="email" id="username" name="username" required autocomplete="email"
+                           class="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white bg-white dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-accent-emerald focus:border-transparent transition"/>
+                </div>
+                <div>
+                    <label for="password" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Senha</label>
+                    <input type="password" id="password" name="password" required autocomplete="current-password"
+                           class="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white bg-white dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-accent-emerald focus:border-transparent transition"/>
+                </div>
+                <button type="submit"
+                        class="w-full bg-accent-emerald hover:bg-emerald-600 text-white py-2.5 rounded-lg text-sm font-semibold transition-colors">
+                    Entrar
+                </button>
+            </form>
+
+            <p class="text-center text-sm text-slate-600 dark:text-slate-400 mt-6">
+                Não tem conta?
+                <a th:href="@{/auth/register}" class="text-accent-emerald font-medium hover:underline">Criar conta</a>
+            </p>
+        </div>
     </div>
 </div>
-
 </body>
 </html>

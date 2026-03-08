@@ -202,29 +202,6 @@ Boas práticas: DTOs na borda, serviços finos com responsabilidade única, trat
 
 ---
 
-## UX / Design (paleta de cores e tipografia)
-- **Fontes:** `Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial`
-  - Títulos: Inter 600/700
-  - Texto: Inter 400
-  - Fallback: system fonts para performance
-- **Paleta de cores (sugestão):**
-  - `--primary: #1A237E` (azul vibrante — ações, CTAs principais)
-  - `--primary-600: #084ED6`
-  - `--secondary: #00B88A` (verde — sucesso, confirmação)
-  - `--accent: #FFB020` (amarelo/laranja — destaque)
-  - `--neutral-900: #0F1724` (texto principal)
-  - `--neutral-700: #334155` (subtexto)
-  - `--neutral-200: #E6EEF8` (background leve)
-  - `--danger: #E02424` (erros / alertas críticos)
-  - `--surface: #FFFFFF` (cartões, painéis)
-- **Tokens de UI básicos:**
-  - espaçamentos (4/8/16/24/32)
-  - radius padrão: `8px`
-  - sombra leve para cards: `0 2px 8px rgba(2,6,23,0.06)`
-- **Observação:** definir variações de cor para acessibilidade (contraste) e testar com ferramentas (axe, Lighthouse).
-
----
-
 ## Observações finais e próximos passos práticos
 1. **MVP mínimo recomendado (versão inicial):**
    - autenticação (registro/login)

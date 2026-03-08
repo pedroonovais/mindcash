@@ -2,125 +2,215 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{fragments/layout}"
-      lang="pt-BR">
+      lang="pt-br">
 <head>
     <title>MindCash — Controle Financeiro Inteligente</title>
 </head>
 <body>
-<div layout:fragment="public-content">
+<div layout:fragment="public-content" class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
 
-    <!-- Hero -->
-    <div class="min-h-screen bg-gradient-to-br from-primary via-primary-600 to-primary flex flex-col">
-        <nav class="max-w-6xl mx-auto w-full px-6 py-5 flex items-center justify-between">
-            <span class="text-white text-xl font-bold tracking-tight">MindCash</span>
-            <div class="flex items-center gap-4">
-                <a th:href="@{/auth/login}" class="text-white/80 hover:text-white text-sm font-medium transition-colors">Entrar</a>
-                <a th:href="@{/auth/register}" class="bg-accent text-neutral-900 px-5 py-2 rounded-card text-sm font-semibold hover:bg-yellow-400 transition-colors">
-                    Criar conta
+    <header class="sticky top-0 z-50 w-full border-b border-slate-200 dark:border-slate-800 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md">
+        <div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+            <a th:href="@{/}" class="flex items-center gap-2 text-primary dark:text-white">
+                <img th:src="@{/img/logo.png}" alt="MindCash" class="h-10 w-auto object-contain"/>
+            </a>
+            <nav class="hidden md:flex items-center gap-8">
+                <a class="text-sm font-medium hover:text-accent-emerald transition-colors" href="#recursos">Recursos</a>
+                <a class="text-sm font-medium hover:text-accent-emerald transition-colors" href="#seguranca">Segurança</a>
+                <a class="text-sm font-medium hover:text-accent-emerald transition-colors" href="#precos">Preços</a>
+            </nav>
+            <div class="flex gap-3">
+                <a th:href="@{/auth/login}" class="hidden sm:flex px-4 py-2 text-sm font-bold transition-all hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg">
+                    Entrar
+                </a>
+                <a th:href="@{/auth/register}" class="bg-accent-emerald hover:bg-emerald-600 text-white px-5 py-2 text-sm font-bold rounded-lg shadow-lg shadow-emerald-500/20 transition-all">
+                    Começar Agora
                 </a>
             </div>
-        </nav>
+        </div>
+    </header>
 
-        <div class="flex-1 flex items-center">
-            <div class="max-w-6xl mx-auto w-full px-6 grid lg:grid-cols-2 gap-16 items-center">
-                <div>
-                    <h1 class="text-4xl lg:text-5xl font-bold text-white leading-tight">
-                        Transforme seus registros financeiros em
-                        <span class="text-accent">decisões inteligentes</span>
-                    </h1>
-                    <p class="text-lg text-white/70 mt-6 leading-relaxed">
-                        Controle contas, registre transações, acompanhe metas e veja seu patrimônio crescer — tudo em um só lugar.
-                    </p>
-                    <div class="mt-8 flex gap-4">
-                        <a th:href="@{/auth/register}" class="bg-accent text-neutral-900 px-8 py-3 rounded-card font-semibold hover:bg-yellow-400 transition-colors">
-                            Começar grátis
-                        </a>
-                        <a href="#features" class="border border-white/30 text-white px-8 py-3 rounded-card font-medium hover:bg-white/10 transition-colors">
-                            Saiba mais
-                        </a>
+    <main class="flex-1">
+        <section class="relative px-6 py-16 md:py-24 lg:py-32 overflow-hidden">
+            <div class="mx-auto max-w-7xl">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    <div class="flex flex-col gap-8 text-left z-10">
+                        <div class="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full px-3 py-1 w-fit">
+                            <span class="material-symbols-outlined text-accent-emerald text-sm">trending_up</span>
+                            <span class="text-xs font-bold text-accent-emerald uppercase tracking-wider">Gestão Inteligente</span>
+                        </div>
+                        <h1 class="text-4xl md:text-6xl font-black leading-[1.1] tracking-tight text-slate-900 dark:text-white">
+                            Transforme seus registros em <span class="text-accent-emerald">decisões reais</span>
+                        </h1>
+                        <p class="text-lg md:text-xl text-slate-600 dark:text-slate-400 max-w-xl">
+                            Assuma o controle total do seu patrimônio e impulsione seu crescimento financeiro com inteligência de dados de ponta.
+                        </p>
+                        <div class="flex flex-col sm:flex-row gap-4">
+                            <a th:href="@{/auth/register}" class="flex items-center justify-center gap-2 bg-primary dark:bg-accent-emerald text-white px-8 py-4 text-lg font-bold rounded-xl shadow-xl hover:scale-[1.02] transition-transform">
+                                Começar Gratuitamente
+                                <span class="material-symbols-outlined">arrow_forward</span>
+                            </a>
+                            <a href="#recursos" class="flex items-center justify-center gap-2 border-2 border-slate-200 dark:border-slate-800 bg-transparent px-8 py-4 text-lg font-bold rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                                Ver Demonstração
+                            </a>
+                        </div>
                     </div>
-                </div>
-
-                <div class="hidden lg:block">
-                    <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/10">
-                        <div class="space-y-4">
-                            <div class="bg-white/10 rounded-xl p-4 flex items-center justify-between">
-                                <span class="text-white/80 text-sm">Saldo total</span>
-                                <span class="text-white font-bold text-lg">R$ 12.450,00</span>
-                            </div>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div class="bg-secondary/20 rounded-xl p-4">
-                                    <span class="text-secondary text-xs font-medium">Receitas</span>
-                                    <p class="text-white font-bold mt-1">R$ 8.500,00</p>
+                    <div class="relative lg:h-[500px] flex items-center justify-center">
+                        <div class="absolute inset-0 bg-emerald-500/10 blur-[100px] rounded-full"></div>
+                        <div class="relative w-full aspect-video rounded-2xl bg-slate-200 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 shadow-2xl overflow-hidden group">
+                            <div class="w-full h-full bg-cover bg-center" data-alt="Dashboard interface showing financial charts and balance overview" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAfqXXHd7v4nDXKg2ZAuMkIMPyD_jhhMfgeUo9DuYZ14GcKnW7XlsUMkzOWTbCJtjaQUsoLSP8MhwR_vg9Ai7PPJvRXoJfzBw8qVrAZYxm28DbNDxSDsCIht9twQ_XkzTQj42dl1BwwxVjMC9gzTU7jwJQ4myNCTY7Kd6GHB8YaFP_y2nARQEZzm99RJz7_kJtOERp4YFFR0UO50j5e-TKxXSPg9j5633XvAu558ib0HUCxe97guJB0TNM9GjwMVaK09_zVNeUSHEY');"></div>
+                            <div class="absolute top-4 left-4 bg-white/90 dark:bg-slate-900/90 p-3 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-accent-emerald">show_chart</span>
                                 </div>
-                                <div class="bg-danger/20 rounded-xl p-4">
-                                    <span class="text-red-300 text-xs font-medium">Despesas</span>
-                                    <p class="text-white font-bold mt-1">R$ 3.200,00</p>
-                                </div>
-                            </div>
-                            <div class="bg-white/10 rounded-xl p-4">
-                                <span class="text-white/60 text-xs">Top categoria</span>
-                                <div class="flex items-center justify-between mt-2">
-                                    <span class="text-white text-sm">Alimentação</span>
-                                    <span class="text-accent font-semibold text-sm">R$ 1.230,00</span>
+                                <div>
+                                    <p class="text-[10px] uppercase font-bold text-slate-500">Patrimônio</p>
+                                    <p class="text-sm font-black">+R$ 12.450,00</p>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
+        </section>
 
-    <!-- Features -->
-    <section id="features" class="py-24 bg-surface">
-        <div class="max-w-6xl mx-auto px-6">
-            <h2 class="text-3xl font-bold text-center text-neutral-900">Tudo que você precisa para organizar suas finanças</h2>
-            <p class="text-neutral-700 text-center mt-3 max-w-2xl mx-auto">
-                Funcionalidades pensadas para quem quer simplicidade com controle total.
-            </p>
-
-            <div class="mt-16 grid md:grid-cols-3 gap-8">
-                <div class="bg-neutral-200/50 rounded-2xl p-6">
-                    <div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
-                        <i class="lucide lucide-wallet text-primary text-xl"></i>
-                    </div>
-                    <h3 class="font-semibold mt-4 text-neutral-900">Gestão de Contas</h3>
-                    <p class="text-sm text-neutral-700 mt-2">Organize contas bancárias, carteiras, cartões e corretoras em um só lugar.</p>
+        <section class="bg-slate-50 dark:bg-slate-900/50 py-24 px-6 border-y border-slate-200 dark:border-slate-800" id="recursos">
+            <div class="mx-auto max-w-7xl">
+                <div class="text-center mb-16 space-y-4">
+                    <h2 class="text-3xl md:text-5xl font-black text-slate-900 dark:text-white">Sua inteligência financeira em um só lugar</h2>
+                    <p class="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto text-lg">
+                        Ferramentas poderosas desenhadas para organizar sua vida financeira e acelerar sua jornada para a liberdade.
+                    </p>
                 </div>
-                <div class="bg-neutral-200/50 rounded-2xl p-6">
-                    <div class="w-12 h-12 bg-secondary/10 rounded-xl flex items-center justify-center">
-                        <i class="lucide lucide-arrow-left-right text-secondary text-xl"></i>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="group p-8 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-background-dark hover:border-accent-emerald/50 transition-all duration-300 shadow-sm hover:shadow-xl hover:shadow-emerald-500/5">
+                        <div class="w-14 h-14 rounded-xl bg-emerald-500/10 flex items-center justify-center text-accent-emerald mb-6 group-hover:scale-110 transition-transform">
+                            <span class="material-symbols-outlined text-3xl">lightbulb</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3 text-slate-900 dark:text-white">Insights Acionáveis</h3>
+                        <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+                            Algoritmos inteligentes que transformam extratos confusos em sugestões claras de economia e investimento.
+                        </p>
                     </div>
-                    <h3 class="font-semibold mt-4 text-neutral-900">Transações Detalhadas</h3>
-                    <p class="text-sm text-neutral-700 mt-2">Registre receitas, despesas e transferências com categorização automática.</p>
-                </div>
-                <div class="bg-neutral-200/50 rounded-2xl p-6">
-                    <div class="w-12 h-12 bg-accent/10 rounded-xl flex items-center justify-center">
-                        <i class="lucide lucide-bar-chart-3 text-accent text-xl"></i>
+                    <div class="group p-8 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-background-dark hover:border-accent-emerald/50 transition-all duration-300 shadow-sm hover:shadow-xl hover:shadow-emerald-500/5">
+                        <div class="w-14 h-14 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500 mb-6 group-hover:scale-110 transition-transform">
+                            <span class="material-symbols-outlined text-3xl">account_balance</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3 text-slate-900 dark:text-white">Gestão de Contas</h3>
+                        <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+                            Centralize todas as suas contas bancárias, cartões e dinheiro vivo em uma interface unificada e intuitiva.
+                        </p>
                     </div>
-                    <h3 class="font-semibold mt-4 text-neutral-900">Dashboard Inteligente</h3>
-                    <p class="text-sm text-neutral-700 mt-2">Visualize saldo, gastos, receitas e top categorias em tempo real.</p>
+                    <div class="group p-8 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-background-dark hover:border-accent-emerald/50 transition-all duration-300 shadow-sm hover:shadow-xl hover:shadow-emerald-500/5">
+                        <div class="w-14 h-14 rounded-xl bg-orange-500/10 flex items-center justify-center text-orange-500 mb-6 group-hover:scale-110 transition-transform">
+                            <span class="material-symbols-outlined text-3xl">ads_click</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3 text-slate-900 dark:text-white">Metas Financeiras</h3>
+                        <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+                            Visualize o progresso dos seus sonhos. Do fundo de emergência à viagem dos sonhos, acompanhe passo a passo.
+                        </p>
+                    </div>
+                    <div class="group p-8 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-background-dark hover:border-accent-emerald/50 transition-all duration-300 shadow-sm hover:shadow-xl hover:shadow-emerald-500/5">
+                        <div class="w-14 h-14 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-500 mb-6 group-hover:scale-110 transition-transform">
+                            <span class="material-symbols-outlined text-3xl">monitoring</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3 text-slate-900 dark:text-white">Investimentos</h3>
+                        <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+                            Monitore sua carteira completa de ativos. Veja a rentabilidade real descontando a inflação e taxas.
+                        </p>
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- CTA -->
-    <section class="py-16 bg-primary">
-        <div class="max-w-4xl mx-auto px-6 text-center">
-            <h2 class="text-3xl font-bold text-white">Comece a controlar suas finanças hoje</h2>
-            <p class="text-white/70 mt-3">Cadastre-se gratuitamente e tenha controle total do seu dinheiro.</p>
-            <a th:href="@{/auth/register}" class="mt-8 inline-block bg-accent text-neutral-900 px-10 py-3 rounded-card font-semibold hover:bg-yellow-400 transition-colors">
-                Criar minha conta
-            </a>
-        </div>
-    </section>
+        <section class="py-24 px-6 overflow-hidden" id="seguranca">
+            <div class="mx-auto max-w-7xl">
+                <div class="flex flex-col lg:flex-row items-center gap-16">
+                    <div class="w-full lg:w-1/2 order-2 lg:order-1">
+                        <div class="grid grid-cols-1 gap-6">
+                            <div class="flex gap-5 p-6 rounded-2xl bg-white dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 shadow-sm">
+                                <div class="shrink-0 w-12 h-12 rounded-lg bg-slate-900 dark:bg-slate-700 flex items-center justify-center text-white">
+                                    <span class="material-symbols-outlined">memory</span>
+                                </div>
+                                <div>
+                                    <h4 class="text-lg font-bold mb-1 text-slate-900 dark:text-white">Engenharia de Ponta</h4>
+                                    <p class="text-slate-600 dark:text-slate-400 text-sm">Base tecnológica sólida em Spring Boot para performance excepcional e processamento em tempo real.</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-5 p-6 rounded-2xl bg-white dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 shadow-sm">
+                                <div class="shrink-0 w-12 h-12 rounded-lg bg-slate-900 dark:bg-slate-700 flex items-center justify-center text-white">
+                                    <span class="material-symbols-outlined">database</span>
+                                </div>
+                                <div>
+                                    <h4 class="text-lg font-bold mb-1 text-slate-900 dark:text-white">Privacidade Blindada</h4>
+                                    <p class="text-slate-600 dark:text-slate-400 text-sm">Dados criptografados de ponta a ponta e persistência segura em PostgreSQL com isolamento total.</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-5 p-6 rounded-2xl bg-white dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 shadow-sm">
+                                <div class="shrink-0 w-12 h-12 rounded-lg bg-slate-900 dark:bg-slate-700 flex items-center justify-center text-white">
+                                    <span class="material-symbols-outlined">cloud_done</span>
+                                </div>
+                                <div>
+                                    <h4 class="text-lg font-bold mb-1 text-slate-900 dark:text-white">Sempre Online</h4>
+                                    <p class="text-slate-600 dark:text-slate-400 text-sm">Infraestrutura em containers Docker garantindo 99.9% de uptime para quando você mais precisar.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="w-full lg:w-1/2 order-1 lg:order-2 space-y-8">
+                        <h2 class="text-3xl md:text-5xl font-black text-slate-900 dark:text-white">Tecnologia para sua paz de espírito</h2>
+                        <p class="text-slate-600 dark:text-slate-400 text-lg">
+                            Não somos apenas um app de finanças. Somos uma plataforma robusta desenvolvida com os padrões de segurança mais rigorosos do mercado.
+                        </p>
+                        <div class="flex items-center gap-4 text-accent-emerald font-bold flex-wrap">
+                            <span class="material-symbols-outlined">verified_user</span>
+                            Certificado SSL de 256 bits
+                            <span class="text-slate-300 dark:text-slate-700">|</span>
+                            <span class="material-symbols-outlined">lock</span>
+                            LGPD Compliance
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-    <!-- Footer -->
-    <footer class="bg-neutral-900 text-white/50 py-8">
-        <div class="max-w-6xl mx-auto px-6 text-center text-sm">
-            &copy; 2026 MindCash. Controle, consciência e crescimento patrimonial.
+        <section class="py-24 px-6 relative" id="precos">
+            <div class="mx-auto max-w-5xl">
+                <div class="relative overflow-hidden rounded-[2.5rem] bg-primary px-8 py-16 md:px-16 md:py-24 text-center">
+                    <div class="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-accent-emerald/20 blur-[100px] rounded-full"></div>
+                    <div class="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 bg-blue-500/10 blur-[100px] rounded-full"></div>
+                    <div class="relative z-10 max-w-2xl mx-auto space-y-8">
+                        <h2 class="text-3xl md:text-5xl font-black text-white">Pronto para assumir o comando da sua vida financeira?</h2>
+                        <p class="text-slate-400 text-lg">
+                            Junte-se a milhares de pessoas que já transformaram seu futuro com a MindCash.
+                        </p>
+                        <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+                            <a th:href="@{/auth/register}" class="w-full sm:w-auto bg-accent-emerald hover:bg-emerald-600 text-white px-10 py-5 text-xl font-black rounded-2xl shadow-2xl shadow-emerald-500/20 transition-all hover:scale-105">
+                                Começar Agora Gratuitamente
+                            </a>
+                            <span class="text-slate-500 text-sm font-medium">Não requer cartão de crédito</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-white dark:bg-background-dark border-t border-slate-200 dark:border-slate-800 px-6 py-12">
+        <div class="mx-auto max-w-7xl">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-8">
+                <div class="flex items-center gap-2 text-primary dark:text-white">
+                    <img th:src="@{/img/logo.png}" alt="MindCash" class="h-10 w-auto object-contain"/>
+                </div>
+                <div class="flex gap-8 text-sm font-medium text-slate-500 dark:text-slate-400">
+                    <a class="hover:text-accent-emerald transition-colors" href="#">Termos</a>
+                    <a class="hover:text-accent-emerald transition-colors" href="#">Privacidade</a>
+                    <a class="hover:text-accent-emerald transition-colors" href="#">Contato</a>
+                </div>
+                <p class="text-xs text-slate-400 dark:text-slate-500">
+                    © 2024 MindCash Financial Technologies. Todos os direitos reservados.
+                </p>
+            </div>
         </div>
     </footer>
 </div>

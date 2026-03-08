@@ -2,16 +2,16 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{fragments/layout}"
-      lang="pt-BR">
+      lang="pt-br">
 <head><title>Transações</title></head>
 <body>
 
 <div layout:fragment="header">
     <div class="flex items-center justify-between w-full">
-        <h2 class="text-lg font-semibold text-neutral-900">Transações</h2>
+        <h2 class="text-lg font-semibold text-slate-900 dark:text-white">Transações</h2>
         <a th:href="@{/app/transactions/new}"
-           class="bg-primary hover:bg-primary-600 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+           class="bg-accent-emerald hover:bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2">
+            <span class="material-symbols-outlined text-xl">add</span>
             Nova transação
         </a>
     </div>
@@ -19,40 +19,40 @@
 
 <div layout:fragment="content">
 
-    <div th:if="${transactions.isEmpty()}" class="bg-surface rounded-2xl shadow-card p-8 text-center">
-        <p class="text-neutral-700">Nenhuma transação registrada.</p>
-        <a th:href="@{/app/transactions/new}" class="text-primary-600 font-medium hover:underline text-sm mt-2 inline-block">
+    <div th:if="${transactions.isEmpty()}" class="bg-white dark:bg-background-dark border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm p-8 text-center">
+        <p class="text-slate-600 dark:text-slate-400">Nenhuma transação registrada.</p>
+        <a th:href="@{/app/transactions/new}" class="text-accent-emerald font-medium hover:underline text-sm mt-2 inline-block">
             Registre sua primeira transação
         </a>
     </div>
 
-    <div th:unless="${transactions.isEmpty()}" class="bg-surface rounded-2xl shadow-card overflow-hidden">
+    <div th:unless="${transactions.isEmpty()}" class="bg-white dark:bg-background-dark border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden">
         <table class="w-full">
-            <thead class="bg-neutral-200/50">
+            <thead class="bg-slate-100 dark:bg-slate-800/50">
                 <tr>
-                    <th class="text-left px-6 py-3 text-xs font-semibold text-neutral-700 uppercase tracking-wider">Data</th>
-                    <th class="text-left px-6 py-3 text-xs font-semibold text-neutral-700 uppercase tracking-wider">Descrição</th>
-                    <th class="text-left px-6 py-3 text-xs font-semibold text-neutral-700 uppercase tracking-wider">Categoria</th>
-                    <th class="text-left px-6 py-3 text-xs font-semibold text-neutral-700 uppercase tracking-wider">Conta</th>
-                    <th class="text-right px-6 py-3 text-xs font-semibold text-neutral-700 uppercase tracking-wider">Valor</th>
+                    <th class="text-left px-6 py-3 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Data</th>
+                    <th class="text-left px-6 py-3 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Descrição</th>
+                    <th class="text-left px-6 py-3 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Categoria</th>
+                    <th class="text-left px-6 py-3 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Conta</th>
+                    <th class="text-right px-6 py-3 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Valor</th>
                     <th class="px-6 py-3"></th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-neutral-200">
-                <tr th:each="tx : ${transactions}" class="hover:bg-neutral-200/30 transition-colors">
-                    <td class="px-6 py-4 text-sm text-neutral-900" th:text="${#temporals.format(tx.date, 'dd/MM/yyyy')}"></td>
-                    <td class="px-6 py-4 text-sm text-neutral-900" th:text="${tx.description} ?: '—'"></td>
-                    <td class="px-6 py-4 text-sm text-neutral-700" th:text="${tx.category?.name} ?: '—'"></td>
-                    <td class="px-6 py-4 text-sm text-neutral-700" th:text="${tx.account.name}"></td>
+            <tbody class="divide-y divide-slate-200 dark:divide-slate-800">
+                <tr th:each="tx : ${transactions}" class="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
+                    <td class="px-6 py-4 text-sm text-slate-900 dark:text-white" th:text="${#temporals.format(tx.date, 'dd/MM/yyyy')}"></td>
+                    <td class="px-6 py-4 text-sm text-slate-900 dark:text-white" th:text="${tx.description} ?: '—'"></td>
+                    <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400" th:text="${tx.category?.name} ?: '—'"></td>
+                    <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400" th:text="${tx.account.name}"></td>
                     <td class="px-6 py-4 text-sm font-semibold text-right"
-                        th:classappend="${tx.type.name() == 'CREDIT'} ? 'text-secondary' : 'text-danger'"
+                        th:classappend="${tx.type.name() == 'CREDIT'} ? 'text-accent-emerald' : 'text-red-500'"
                         th:text="${(tx.type.name() == 'CREDIT' ? '+' : '-') + ' R$ ' + #numbers.formatDecimal(tx.amount, 1, 'POINT', 2, 'COMMA')}">
                     </td>
                     <td class="px-6 py-4 text-right">
                         <form th:action="@{/app/transactions/{id}/delete(id=${tx.id})}" method="post"
                               onsubmit="return confirm('Deseja excluir esta transação?');" class="inline">
-                            <button type="submit" class="text-neutral-700 hover:text-danger transition-colors p-1" title="Excluir">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                            <button type="submit" class="text-slate-500 hover:text-red-500 transition-colors p-1" title="Excluir">
+                                <span class="material-symbols-outlined text-lg">delete</span>
                             </button>
                         </form>
                     </td>
@@ -61,18 +61,18 @@
         </table>
 
         <!-- Paginação -->
-        <div th:if="${transactions.totalPages > 1}" class="px-6 py-4 border-t border-neutral-200 flex items-center justify-between">
-            <span class="text-sm text-neutral-700"
+        <div th:if="${transactions.totalPages > 1}" class="px-6 py-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
+            <span class="text-sm text-slate-600 dark:text-slate-400"
                   th:text="'Página ' + ${transactions.number + 1} + ' de ' + ${transactions.totalPages}"></span>
             <div class="flex gap-2">
                 <a th:if="${transactions.number > 0}"
                    th:href="@{/app/transactions(page=${transactions.number - 1})}"
-                   class="px-3 py-1.5 border border-gray-200 rounded-lg text-sm text-neutral-700 hover:bg-gray-50">
+                   class="px-3 py-1.5 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800">
                     Anterior
                 </a>
                 <a th:if="${transactions.number < transactions.totalPages - 1}"
                    th:href="@{/app/transactions(page=${transactions.number + 1})}"
-                   class="px-3 py-1.5 border border-gray-200 rounded-lg text-sm text-neutral-700 hover:bg-gray-50">
+                   class="px-3 py-1.5 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800">
                     Próxima
                 </a>
             </div>
