@@ -11,15 +11,17 @@
     <header class="sticky top-0 z-50 w-full border-b border-slate-200 dark:border-slate-800 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md">
         <div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
             <a th:href="@{/}" class="flex items-center gap-2 text-primary dark:text-white">
-                <img th:src="@{/img/logo.png}" alt="MindCash" class="h-10 w-auto object-contain"/>
+                <img th:src="@{/img/logo.png}" alt="MindCash" class="h-10 w-auto object-contain hidden dark:block"/>
+                <img th:src="@{/img/logo_dark_letter.png}" alt="MindCash" class="h-10 w-auto object-contain dark:hidden"/>
             </a>
             <nav class="hidden md:flex items-center gap-8">
-                <a class="text-sm font-medium hover:text-accent-emerald transition-colors" href="#recursos">Recursos</a>
-                <a class="text-sm font-medium hover:text-accent-emerald transition-colors" href="#seguranca">Segurança</a>
-                <a class="text-sm font-medium hover:text-accent-emerald transition-colors" href="#precos">Preços</a>
+                <a class="text-sm font-medium text-slate-900 dark:text-white hover:text-accent-emerald transition-colors" href="#recursos">Recursos</a>
+                <a class="text-sm font-medium text-slate-900 dark:text-white hover:text-accent-emerald transition-colors" href="#seguranca">Segurança</a>
+                <a class="text-sm font-medium text-slate-900 dark:text-white hover:text-accent-emerald transition-colors" href="#precos">Preços</a>
             </nav>
-            <div class="flex gap-3">
-                <a th:href="@{/auth/login}" class="hidden sm:flex px-4 py-2 text-sm font-bold transition-all hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg">
+            <div class="flex gap-3 items-center">
+                <div th:insert="~{fragments/theme-toggle :: themeToggleButton}"></div>
+                <a th:href="@{/auth/login}" class="hidden sm:flex px-4 py-2 text-sm font-bold text-slate-900 dark:text-white transition-all hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg">
                     Entrar
                 </a>
                 <a th:href="@{/auth/register}" class="bg-accent-emerald hover:bg-emerald-600 text-white px-5 py-2 text-sm font-bold rounded-lg shadow-lg shadow-emerald-500/20 transition-all">
@@ -49,7 +51,7 @@
                                 Começar Gratuitamente
                                 <span class="material-symbols-outlined">arrow_forward</span>
                             </a>
-                            <a href="#recursos" class="flex items-center justify-center gap-2 border-2 border-slate-200 dark:border-slate-800 bg-transparent px-8 py-4 text-lg font-bold rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                            <a href="#recursos" class="flex items-center justify-center gap-2 border-2 border-slate-200 dark:border-slate-800 bg-transparent px-8 py-4 text-lg font-bold rounded-xl text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
                                 Ver Demonstração
                             </a>
                         </div>
@@ -63,8 +65,8 @@
                                     <span class="material-symbols-outlined text-accent-emerald">show_chart</span>
                                 </div>
                                 <div>
-                                    <p class="text-[10px] uppercase font-bold text-slate-500">Patrimônio</p>
-                                    <p class="text-sm font-black">+R$ 12.450,00</p>
+                                    <p class="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400">Patrimônio</p>
+                                    <p class="text-sm font-black text-slate-900 dark:text-white">+R$ 12.450,00</p>
                                 </div>
                             </div>
                         </div>
@@ -175,19 +177,19 @@
 
         <section class="py-24 px-6 relative" id="precos">
             <div class="mx-auto max-w-5xl">
-                <div class="relative overflow-hidden rounded-[2.5rem] bg-primary px-8 py-16 md:px-16 md:py-24 text-center">
+                <div class="relative overflow-hidden rounded-[2.5rem] bg-slate-100 dark:bg-primary px-8 py-16 md:px-16 md:py-24 text-center">
                     <div class="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-accent-emerald/20 blur-[100px] rounded-full"></div>
                     <div class="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 bg-blue-500/10 blur-[100px] rounded-full"></div>
                     <div class="relative z-10 max-w-2xl mx-auto space-y-8">
-                        <h2 class="text-3xl md:text-5xl font-black text-white">Pronto para assumir o comando da sua vida financeira?</h2>
-                        <p class="text-slate-400 text-lg">
+                        <h2 class="text-3xl md:text-5xl font-black text-slate-900 dark:text-white">Pronto para assumir o comando da sua vida financeira?</h2>
+                        <p class="text-slate-600 dark:text-slate-400 text-lg">
                             Junte-se a milhares de pessoas que já transformaram seu futuro com a MindCash.
                         </p>
                         <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
                             <a th:href="@{/auth/register}" class="w-full sm:w-auto bg-accent-emerald hover:bg-emerald-600 text-white px-10 py-5 text-xl font-black rounded-2xl shadow-2xl shadow-emerald-500/20 transition-all hover:scale-105">
                                 Começar Agora Gratuitamente
                             </a>
-                            <span class="text-slate-500 text-sm font-medium">Não requer cartão de crédito</span>
+                            <span class="text-slate-600 dark:text-slate-500 text-sm font-medium">Não requer cartão de crédito</span>
                         </div>
                     </div>
                 </div>
@@ -199,7 +201,8 @@
         <div class="mx-auto max-w-7xl">
             <div class="flex flex-col md:flex-row justify-between items-center gap-8">
                 <div class="flex items-center gap-2 text-primary dark:text-white">
-                    <img th:src="@{/img/logo.png}" alt="MindCash" class="h-10 w-auto object-contain"/>
+                    <img th:src="@{/img/logo.png}" alt="MindCash" class="h-10 w-auto object-contain hidden dark:block"/>
+                    <img th:src="@{/img/logo_dark_letter.png}" alt="MindCash" class="h-10 w-auto object-contain dark:hidden"/>
                 </div>
                 <div class="flex gap-8 text-sm font-medium text-slate-500 dark:text-slate-400">
                     <a class="hover:text-accent-emerald transition-colors" href="#">Termos</a>
@@ -207,7 +210,7 @@
                     <a class="hover:text-accent-emerald transition-colors" href="#">Contato</a>
                 </div>
                 <p class="text-xs text-slate-400 dark:text-slate-500">
-                    © 2024 MindCash Financial Technologies. Todos os direitos reservados.
+                    © 2026 MindCash Financial Technologies. Todos os direitos reservados.
                 </p>
             </div>
         </div>

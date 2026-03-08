@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/app-layout :: appLayout('Investimentos — MindCash', ~{::.header}, ~{::.content})}"
+      lang="pt-br">
+<head>
+    <title>Investimentos</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<div class="header">
+    <div class="flex items-center justify-between w-full flex-wrap gap-4">
+        <div class="flex items-center gap-4 flex-wrap">
+            <h2 class="text-lg font-semibold text-slate-900 dark:text-white">Investimentos</h2>
+            <div class="flex gap-1 rounded-lg border border-slate-200 dark:border-slate-700 p-0.5">
+                <button type="button" class="px-3 py-1.5 text-xs font-medium rounded-md bg-accent-emerald text-white">1M</button>
+                <button type="button" class="px-3 py-1.5 text-xs font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md">1A</button>
+                <button type="button" class="px-3 py-1.5 text-xs font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md">TUDO</button>
+            </div>
+        </div>
+        <a th:href="@{/app/investments/new}"
+           class="bg-accent-emerald hover:bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2">
+            <span class="material-symbols-outlined text-xl">add</span>
+            Cadastrar novo investimento
+        </a>
+    </div>
+</div>
+
+<div class="content">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <!-- Patrimônio total -->
+        <div class="bg-white dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-sm p-6">
+            <h3 class="text-sm font-medium text-slate-600 dark:text-slate-400 uppercase tracking-wider">Patrimônio Total</h3>
+            <p class="text-2xl font-bold text-accent-emerald mt-2"
+               th:text="'R$ ' + ${#numbers.formatDecimal(totalInvested != null ? totalInvested : 0, 1, 'POINT', 2, 'COMMA')}"></p>
+            <p class="text-xs text-slate-600 dark:text-slate-400 mt-1">Custo de aquisição (total aplicado)</p>
+        </div>
+
+        <!-- Evolução da carteira -->
+        <div class="bg-white dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-sm p-6">
+            <h3 class="text-sm font-medium text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-4">Evolução da Carteira</h3>
+            <div class="h-48" th:if="${!#lists.isEmpty(evolutionData)}">
+                <canvas id="chartEvolution"></canvas>
+            </div>
+            <p th:if="${#lists.isEmpty(evolutionData)}" class="text-sm text-slate-500 dark:text-slate-400 py-4">Cadastre investimentos para ver a evolução acumulada.</p>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <!-- Alocação de ativos -->
+        <div class="bg-white dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-sm p-6">
+            <h3 class="text-sm font-medium text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-4">Alocação de Ativos</h3>
+            <div class="h-48 flex items-center justify-center" th:if="${!#lists.isEmpty(allocationByType)}">
+                <canvas id="chartAllocation"></canvas>
+            </div>
+            <div th:if="${!#lists.isEmpty(allocationByType)}" class="mt-4 space-y-2">
+                <div th:each="e : ${allocationLegend}" class="flex items-center justify-between text-sm">
+                    <span class="text-slate-700 dark:text-slate-300" th:text="${e.key}"></span>
+                    <span class="font-medium text-slate-900 dark:text-white" th:text="${#numbers.formatDecimal(e.value, 1, 'POINT', 1, 'COMMA')} + '%'"></span>
+                </div>
+            </div>
+            <p th:if="${#lists.isEmpty(allocationByType)}" class="text-sm text-slate-500 dark:text-slate-400 py-4">Nenhum investimento por tipo ainda.</p>
+        </div>
+
+        <!-- Projeção do patrimônio -->
+        <div class="bg-white dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-sm p-6">
+            <h3 class="text-sm font-medium text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-4">Projeção do Patrimônio</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mb-3">Simule o valor futuro com juros compostos (taxa ao ano).</p>
+            <div class="grid grid-cols-2 gap-3 mb-3">
+                <div>
+                    <label class="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Período</label>
+                    <input type="number" id="projPeriod" min="1" value="12" class="w-full px-3 py-2 border border-slate-200 dark:border-slate-600 rounded-lg text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white"/>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Unidade</label>
+                    <select id="projUnit" class="w-full px-3 py-2 border border-slate-200 dark:border-slate-600 rounded-lg text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white">
+                        <option value="months">Meses</option>
+                        <option value="years">Anos</option>
+                    </select>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Taxa (% a.a.)</label>
+                <input type="number" id="projRate" step="0.1" min="0" value="10" class="w-full px-3 py-2 border border-slate-200 dark:border-slate-600 rounded-lg text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white"/>
+            </div>
+            <button type="button" id="btnProj" class="w-full bg-accent-emerald hover:bg-emerald-600 text-white py-2 rounded-lg text-sm font-semibold transition-colors">Calcular</button>
+            <p id="projResult" class="mt-3 text-sm font-semibold text-accent-emerald hidden"></p>
+        </div>
+    </div>
+
+    <!-- Minha carteira detalhada -->
+    <div class="bg-white dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-sm overflow-hidden">
+        <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between flex-wrap gap-4">
+            <h3 class="text-sm font-medium text-slate-600 dark:text-slate-400 uppercase tracking-wider">Minha Carteira Detalhada</h3>
+            <a th:href="@{/app/investments/new}"
+               class="text-accent-emerald hover:underline text-sm font-medium flex items-center gap-1">
+                <span class="material-symbols-outlined text-lg">add</span> Cadastrar novo investimento
+            </a>
+        </div>
+
+        <div th:if="${investments.isEmpty()}" class="p-8 text-center text-slate-600 dark:text-slate-400">
+            <p>Nenhum investimento cadastrado.</p>
+            <a th:href="@{/app/investments/new}" class="text-accent-emerald font-medium hover:underline text-sm mt-2 inline-block">Cadastrar primeiro investimento</a>
+        </div>
+
+        <div th:unless="${investments.isEmpty()}" class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-slate-100 dark:bg-slate-800/80">
+                    <tr>
+                        <th class="text-left px-6 py-3 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Data</th>
+                        <th class="text-left px-6 py-3 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Descrição / Tipo</th>
+                        <th class="text-left px-6 py-3 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Origem → Destino</th>
+                        <th class="text-left px-6 py-3 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Tipo investimento</th>
+                        <th class="text-left px-6 py-3 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Rentabilidade</th>
+                        <th class="text-right px-6 py-3 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Valor</th>
+                        <th class="px-6 py-3"></th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
+                    <tr th:each="inv : ${investments}" class="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
+                        <td class="px-6 py-4 text-sm text-slate-900 dark:text-white" th:text="${#temporals.format(inv.date, 'dd/MM/yyyy')}"></td>
+                        <td class="px-6 py-4 text-sm text-slate-900 dark:text-white" th:text="${inv.description} ?: inv.investmentType.label"></td>
+                        <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">
+                            <span th:text="${inv.sourceAccount.name}"></span> → <span th:text="${inv.destinationAccount.name}"></span>
+                        </td>
+                        <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400" th:text="${inv.investmentType.label}"></td>
+                        <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">
+                            <span th:text="${#numbers.formatDecimal(inv.rentabilityValue, 1, 'POINT', 2, 'COMMA') + ' ' + inv.rentabilityKind.label}"></span>
+                        </td>
+                        <td class="px-6 py-4 text-sm font-semibold text-accent-emerald text-right"
+                            th:text="'R$ ' + ${#numbers.formatDecimal(inv.amount, 1, 'POINT', 2, 'COMMA')}"></td>
+                        <td class="px-6 py-4 text-right">
+                            <form th:action="@{/app/investments/{id}/delete(id=${inv.id})}" method="post"
+                                  onsubmit="return confirm('Excluir este investimento? O saldo será revertido nas contas.');" class="inline">
+                                <button type="submit" class="text-slate-500 hover:text-red-500 transition-colors p-1" title="Excluir">
+                                    <span class="material-symbols-outlined text-lg">delete</span>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript" th:if="${!#lists.isEmpty(evolutionLabels)}">
+    (function() {
+        var labels = /*[[${evolutionLabels}]]*/ [];
+        var values = /*[[${evolutionValues}]]*/ [];
+        var ctx = document.getElementById('chartEvolution');
+        if (ctx && labels.length) {
+            new Chart(ctx.getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Patrimônio acumulado',
+                        data: values,
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(148, 163, 184, 0.2)' },
+                            ticks: { color: '#94a3b8', callback: function(v) { return 'R$ ' + v.toLocaleString('pt-BR'); } }
+                        },
+                        x: { grid: { display: false }, ticks: { color: '#94a3b8', maxRotation: 45 } }
+                    }
+                }
+            });
+        }
+    })();
+</script>
+
+<script th:inline="javascript" th:if="${!#lists.isEmpty(allocationLabels)}">
+    (function() {
+        var labels = /*[[${allocationLabels}]]*/ [];
+        var data = /*[[${allocationPercents}]]*/ [];
+        var colors = ['#10b981', '#3b82f6', '#8b5cf6', '#f59e0b', '#ef4444', '#6b7280'];
+        var ctx = document.getElementById('chartAllocation');
+        if (ctx && data.length) {
+            new Chart(ctx.getContext('2d'), {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{ data: data, backgroundColor: colors.slice(0, data.length), borderWidth: 0 }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom' } },
+                    cutout: '65%'
+                }
+            });
+        }
+    })();
+</script>
+
+<script th:inline="javascript">
+    (function() {
+        var totalInvested = /*[[${totalInvested != null ? totalInvested.doubleValue() : 0}]]*/ 0;
+        document.getElementById('btnProj').addEventListener('click', function() {
+            var period = parseInt(document.getElementById('projPeriod').value, 10) || 0;
+            var unit = document.getElementById('projUnit').value;
+            var rate = parseFloat(document.getElementById('projRate').value) || 0;
+            if (period <= 0 || rate < 0) {
+                document.getElementById('projResult').textContent = 'Preencha período e taxa.';
+                document.getElementById('projResult').classList.remove('hidden');
+                return;
+            }
+            var years = unit === 'years' ? period : period / 12;
+            var factor = Math.pow(1 + rate / 100, years);
+            var result = totalInvested * factor;
+            document.getElementById('projResult').textContent = 'Patrimônio projetado: R$ ' + result.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            document.getElementById('projResult').classList.remove('hidden');
+        });
+    })();
+</script>
+</body>
+</html>

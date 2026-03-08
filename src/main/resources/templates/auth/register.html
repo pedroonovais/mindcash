@@ -7,10 +7,12 @@
 </head>
 <body>
 <div class="page-content min-h-screen flex items-center justify-center p-4 bg-background-light dark:bg-background-dark">
+    <div class="fixed top-4 right-4 z-50" th:insert="~{fragments/theme-toggle :: themeToggleButton}"></div>
     <div class="w-full max-w-md">
         <div class="text-center mb-8">
             <a th:href="@{/}" class="flex items-center justify-center">
-                <img th:src="@{/img/logo.png}" alt="MindCash" class="h-12 w-auto object-contain"/>
+                <img th:src="@{/img/logo.png}" alt="MindCash" class="h-12 w-auto object-contain hidden dark:block"/>
+                <img th:src="@{/img/logo_dark_letter.png}" alt="MindCash" class="h-12 w-auto object-contain dark:hidden"/>
             </a>
             <p class="text-slate-600 dark:text-slate-400 mt-1 text-sm">Crie sua conta gratuita</p>
         </div>

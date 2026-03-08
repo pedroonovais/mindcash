@@ -5,5 +5,6 @@ public enum AccountType {
     POUPANCA,
     CARTEIRA,
     CARTAO,
-    CORRETORA
+    CORRETORA,
+    INVESTIMENTO
 }

@@ -2,10 +2,11 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      class="dark" lang="pt-br">
+      lang="pt-br">
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <th:block th:replace="~{fragments/theme-toggle :: themeInit}"></th:block>
     <title layout:title-pattern="$CONTENT_TITLE — MindCash">MindCash</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script>
@@ -44,7 +45,8 @@
 <aside sec:authorize="isAuthenticated()" class="w-64 bg-primary min-h-screen flex flex-col fixed left-0 top-0 z-30">
     <div class="p-6 border-b border-white/10">
         <a th:href="@{/app/dashboard}" class="flex items-center gap-2 text-white">
-            <img th:src="@{/img/logo.png}" alt="MindCash" class="h-9 w-auto object-contain"/>
+            <img th:src="@{/img/logo.png}" alt="MindCash" class="h-9 w-auto object-contain hidden dark:block"/>
+            <img th:src="@{/img/logo.png}" alt="MindCash" class="h-9 w-auto object-contain dark:hidden"/>
         </a>
         <p class="text-sm text-white/60 mt-1">Gestão Financeira</p>
     </div>
@@ -88,6 +90,7 @@
             <h2 class="text-lg font-semibold text-slate-900 dark:text-white">MindCash</h2>
         </div>
         <div class="flex items-center gap-3">
+            <div th:insert="~{fragments/theme-toggle :: themeToggleButton}"></div>
             <span class="text-sm text-slate-600 dark:text-slate-400" sec:authentication="name"></span>
         </div>
     </header>

@@ -7,6 +7,7 @@
 </head>
 <body>
 <div class="page-content min-h-screen flex items-center justify-center p-4 bg-background-light dark:bg-background-dark">
+    <div class="fixed top-4 right-4 z-50" th:insert="~{fragments/theme-toggle :: themeToggleButton}"></div>
     <div class="bg-white dark:bg-background-dark border border-slate-200 dark:border-slate-800 rounded-2xl shadow-lg p-8 max-w-md w-full text-center">
         <h1 class="text-xl font-semibold text-slate-900 dark:text-white mb-2">Algo deu errado</h1>
         <p class="text-slate-600 dark:text-slate-400 text-sm mb-6" th:text="${errorMessage} ?: 'Ocorreu um erro inesperado. Tente novamente.'"></p>

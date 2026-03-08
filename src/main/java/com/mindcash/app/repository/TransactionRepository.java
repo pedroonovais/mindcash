@@ -55,4 +55,6 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
            "AND t.recurrenceType IS NOT NULL AND t.recurrenceParent IS NULL " +
            "ORDER BY t.recurrenceNextYm ASC NULLS LAST, t.createdAt DESC")
     Page<Transaction> findRecurrenceTemplatesByUserId(Long userId, Pageable pageable);
+
+    List<Transaction> findByInvestmentId(Long investmentId);
 }

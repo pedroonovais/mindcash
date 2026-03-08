@@ -52,6 +52,10 @@ public class Transaction {
     @JoinColumn(name = "recurrence_parent_id")
     private Transaction recurrenceParent;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "investment_id")
+    private Investment investment;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -108,6 +112,9 @@ public class Transaction {
 
     public Transaction getRecurrenceParent() { return recurrenceParent; }
     public void setRecurrenceParent(Transaction recurrenceParent) { this.recurrenceParent = recurrenceParent; }
+
+    public Investment getInvestment() { return investment; }
+    public void setInvestment(Investment investment) { this.investment = investment; }
 
     /** Indica se esta linha é um modelo de recorrência (não entra em saldo nem listagem de transações). */
     public boolean isRecurrenceTemplate() {
