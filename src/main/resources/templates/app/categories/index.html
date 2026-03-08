@@ -1,16 +1,15 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{fragments/layout}"
+      th:replace="~{fragments/app-layout :: appLayout('Categorias — MindCash', ~{::.header}, ~{::.content})}"
       lang="pt-br">
 <head><title>Categorias</title></head>
 <body>
 
-<div layout:fragment="header">
+<div class="header">
     <h2 class="text-lg font-semibold text-slate-900 dark:text-white">Categorias</h2>
 </div>
 
-<div layout:fragment="content">
+<div class="content">
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
 

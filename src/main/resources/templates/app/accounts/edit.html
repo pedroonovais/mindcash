@@ -1,16 +1,15 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{fragments/layout}"
+      th:replace="~{fragments/app-layout :: appLayout('Editar Conta — MindCash', ~{::.header}, ~{::.content})}"
       lang="pt-br">
 <head><title>Editar Conta</title></head>
 <body>
 
-<div layout:fragment="header">
+<div class="header">
     <h2 class="text-lg font-semibold text-slate-900 dark:text-white">Editar Conta</h2>
 </div>
 
-<div layout:fragment="content">
+<div class="content">
     <div class="max-w-lg">
         <div class="bg-white dark:bg-background-dark border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm p-6">
             <form th:action="@{/app/accounts/{id}/edit(id=${account.id})}" th:object="${accountRequest}" method="post" class="space-y-4">

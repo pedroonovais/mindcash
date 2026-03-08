@@ -1,17 +1,16 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{fragments/layout}"
+      th:replace="~{fragments/app-layout :: appLayout('Dashboard — MindCash', ~{::.header}, ~{::.content})}"
       lang="pt-br">
 <head><title>Dashboard</title></head>
 <body>
 
-<div layout:fragment="header">
+<div class="header">
     <h2 class="text-lg font-semibold text-slate-900 dark:text-white">Dashboard</h2>
     <p class="text-sm text-slate-600 dark:text-slate-400">Olá, <span th:text="${userName}"></span></p>
 </div>
 
-<div layout:fragment="content">
+<div class="content">
 
     <!-- Cards resumo -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">

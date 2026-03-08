@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{fragments/layout}"
+      th:replace="~{fragments/app-layout :: appLayout('Transações — MindCash', ~{::.header}, ~{::.content})}"
       lang="pt-br">
 <head><title>Transações</title></head>
 <body>
 
-<div layout:fragment="header">
+<div class="header">
     <div class="flex items-center justify-between w-full">
         <h2 class="text-lg font-semibold text-slate-900 dark:text-white">Transações</h2>
         <a th:href="@{/app/transactions/new}"
@@ -17,7 +16,7 @@
     </div>
 </div>
 
-<div layout:fragment="content">
+<div class="content">
 
     <div th:if="${transactions.isEmpty()}" class="bg-white dark:bg-background-dark border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm p-8 text-center">
         <p class="text-slate-600 dark:text-slate-400">Nenhuma transação registrada.</p>

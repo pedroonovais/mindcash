@@ -1,13 +1,12 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{fragments/layout}"
+      th:replace="~{fragments/public-layout :: publicPage('MindCash — Controle Financeiro Inteligente', ~{::.page-content})}"
       lang="pt-br">
 <head>
     <title>MindCash — Controle Financeiro Inteligente</title>
 </head>
 <body>
-<div layout:fragment="public-content" class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
+<div class="page-content relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
 
     <header class="sticky top-0 z-50 w-full border-b border-slate-200 dark:border-slate-800 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md">
         <div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">

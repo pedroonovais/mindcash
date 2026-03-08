@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:fragment="appLayout(title, header, content)"
+      class="dark" lang="pt-br">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title th:text="${title}">MindCash</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0a182e",
+                        "accent-emerald": "#10b981",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#121820",
+                        "danger": "#E02424"
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }
+                }
+            }
+        }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .sidebar-link.active { background-color: #10b981; color: white; }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen flex">
+
+<aside sec:authorize="isAuthenticated()" class="w-64 bg-primary min-h-screen flex flex-col fixed left-0 top-0 z-30">
+    <div class="p-6 border-b border-white/10">
+        <a th:href="@{/app/dashboard}" class="flex items-center gap-2 text-white">
+            <img th:src="@{/img/logo.png}" alt="MindCash" class="h-9 w-auto object-contain"/>
+        </a>
+        <p class="text-sm text-white/60 mt-1">Gestão Financeira</p>
+    </div>
+
+    <nav class="flex-1 p-4 space-y-1">
+        <a th:href="@{/app/dashboard}"
+           th:classappend="${currentUri != null and #strings.contains(currentUri, '/dashboard')} ? 'active' : ''"
+           class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-white/80 hover:bg-white/10 hover:text-accent-emerald transition-colors">
+            <span class="material-symbols-outlined text-lg">dashboard</span> Dashboard
+        </a>
+        <a th:href="@{/app/accounts}"
+           th:classappend="${currentUri != null and #strings.contains(currentUri, '/accounts')} ? 'active' : ''"
+           class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-white/80 hover:bg-white/10 hover:text-accent-emerald transition-colors">
+            <span class="material-symbols-outlined text-lg">account_balance</span> Contas
+        </a>
+        <a th:href="@{/app/transactions}"
+           th:classappend="${currentUri != null and #strings.contains(currentUri, '/transactions')} ? 'active' : ''"
+           class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-white/80 hover:bg-white/10 hover:text-accent-emerald transition-colors">
+            <span class="material-symbols-outlined text-lg">swap_horiz</span> Transações
+        </a>
+        <a th:href="@{/app/categories}"
+           th:classappend="${currentUri != null and #strings.contains(currentUri, '/categories')} ? 'active' : ''"
+           class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-white/80 hover:bg-white/10 hover:text-accent-emerald transition-colors">
+            <span class="material-symbols-outlined text-lg">label</span> Categorias
+        </a>
+    </nav>
+
+    <div class="p-4 border-t border-white/10">
+        <form th:action="@{/auth/logout}" method="post">
+            <button type="submit" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-white/60 hover:text-white hover:bg-white/10 transition-colors w-full">
+                <span class="material-symbols-outlined text-lg">logout</span> Sair
+            </button>
+        </form>
+    </div>
+</aside>
+
+<main sec:authorize="isAuthenticated()" class="flex-1 ml-64">
+    <header class="bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-8 py-4 flex items-center justify-between sticky top-0 z-20">
+        <div th:replace="${header}"></div>
+        <div class="flex items-center gap-3">
+            <span class="text-sm text-slate-600 dark:text-slate-400" sec:authentication="name"></span>
+        </div>
+    </header>
+
+    <div class="p-8">
+        <div th:if="${success}" class="mb-6 bg-emerald-500/10 border border-emerald-500/20 text-emerald-800 dark:text-emerald-200 px-4 py-3 rounded-xl text-sm flex items-center gap-2">
+            <span class="material-symbols-outlined">check_circle</span>
+            <span th:text="${success}"></span>
+        </div>
+        <div th:if="${error}" class="mb-6 bg-red-500/10 border border-red-500/20 text-red-800 dark:text-red-200 px-4 py-3 rounded-xl text-sm flex items-center gap-2">
+            <span class="material-symbols-outlined">error</span>
+            <span th:text="${error}"></span>
+        </div>
+
+        <div th:replace="${content}"></div>
+    </div>
+</main>
+
+</body>
+</html>
