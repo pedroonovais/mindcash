@@ -37,3 +37,8 @@ data/
 
 ### Environment ###
 .env
+
+.agent/
+.agents/
+
+context.md
