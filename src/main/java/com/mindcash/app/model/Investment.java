@@ -18,7 +18,7 @@ public class Investment {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "source_account_id", nullable = false)
+    @JoinColumn(name = "source_account_id")
     private Account sourceAccount;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -27,6 +27,12 @@ public class Investment {
 
     @Column(nullable = false, precision = 15, scale = 2)
     private BigDecimal amount;
+
+    @Column(name = "current_value", nullable = false, precision = 15, scale = 2)
+    private BigDecimal currentValue;
+
+    @Column(name = "asset_name", length = 100)
+    private String assetName;
 
     @Column(nullable = false)
     private LocalDate date;
@@ -55,6 +61,9 @@ public class Investment {
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
+        if (this.currentValue == null) {
+            this.currentValue = this.amount != null ? this.amount : BigDecimal.ZERO;
+        }
     }
 
     @PreUpdate
@@ -91,6 +100,12 @@ public class Investment {
 
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
+
+    public BigDecimal getCurrentValue() { return currentValue; }
+    public void setCurrentValue(BigDecimal currentValue) { this.currentValue = currentValue; }
+
+    public String getAssetName() { return assetName; }
+    public void setAssetName(String assetName) { this.assetName = assetName; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }

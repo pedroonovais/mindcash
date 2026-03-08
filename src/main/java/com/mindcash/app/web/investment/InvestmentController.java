@@ -1,6 +1,8 @@
 package com.mindcash.app.web.investment;
 
 import com.mindcash.app.dto.InvestmentRequest;
+import com.mindcash.app.dto.InitialCompositionRequest;
+import com.mindcash.app.dto.PositionLineDto;
 import com.mindcash.app.model.Account;
 import com.mindcash.app.model.AccountType;
 import com.mindcash.app.model.Investment;
@@ -39,8 +41,8 @@ public class InvestmentController {
     public String index(Model model) {
         Long userId = SecurityUtil.getCurrentUserId();
         List<Investment> investments = investmentService.findByUserId(userId);
-        BigDecimal totalInvested = investmentService.totalInvestedByUserId(userId);
-        List<Object[]> allocationByType = investmentService.sumAmountByType(userId);
+        BigDecimal totalCurrentValue = investmentService.totalCurrentValueByUserId(userId);
+        List<Object[]> allocationByType = investmentService.sumCurrentValueByType(userId);
         var evolutionData = investmentService.getEvolutionData(userId);
 
         List<String> evolutionLabels = evolutionData.stream().map(Map.Entry::getKey).toList();
@@ -49,12 +51,12 @@ public class InvestmentController {
         List<String> allocationLabels = new ArrayList<>();
         List<Double> allocationPercents = new ArrayList<>();
         List<Map.Entry<String, Double>> allocationLegend = new ArrayList<>();
-        if (totalInvested != null && totalInvested.compareTo(BigDecimal.ZERO) > 0) {
+        if (totalCurrentValue != null && totalCurrentValue.compareTo(BigDecimal.ZERO) > 0) {
             for (Object[] row : allocationByType) {
                 InvestmentType type = (InvestmentType) row[0];
                 BigDecimal sum = (BigDecimal) row[1];
                 String label = type.getLabel();
-                double pct = sum.divide(totalInvested, 4, java.math.RoundingMode.HALF_UP).multiply(new BigDecimal("100")).doubleValue();
+                double pct = sum.divide(totalCurrentValue, 4, java.math.RoundingMode.HALF_UP).multiply(new BigDecimal("100")).doubleValue();
                 allocationLabels.add(label);
                 allocationPercents.add(pct);
                 allocationLegend.add(Map.entry(label, pct));
@@ -70,7 +72,8 @@ public class InvestmentController {
                 ));
 
         model.addAttribute("investments", investments);
-        model.addAttribute("totalInvested", totalInvested);
+        model.addAttribute("totalCurrentValue", totalCurrentValue);
+        model.addAttribute("totalInvested", investmentService.totalInvestedByUserId(userId));
         model.addAttribute("allocationByType", allocationByType);
         model.addAttribute("allocationMap", allocationMap);
         model.addAttribute("evolutionData", evolutionData);
@@ -78,7 +81,92 @@ public class InvestmentController {
         model.addAttribute("evolutionValues", evolutionValues);
         model.addAttribute("allocationLabels", allocationLabels);
         model.addAttribute("allocationPercents", allocationPercents);
+        double cdiAnnualRate = 12.0;
+        model.addAttribute("cdiAnnualRate", cdiAnnualRate);
+        List<Double> projectionValues = new ArrayList<>();
+        List<Double> projectionRates = new ArrayList<>();
+        for (Investment inv : investments) {
+            projectionValues.add(inv.getCurrentValue().doubleValue());
+            projectionRates.add(investmentService.getEffectiveAnnualRate(inv.getRentabilityKind(), inv.getRentabilityValue(), cdiAnnualRate));
+        }
+        model.addAttribute("projectionValues", projectionValues);
+        model.addAttribute("projectionRates", projectionRates);
+
+        List<Account> investmentOnlyAccounts = accountService.findByUserId(userId).stream()
+                .filter(a -> a.getType() == AccountType.INVESTIMENTO)
+                .toList();
+        boolean canRegisterExistingBalance = investmentOnlyAccounts.size() == 1
+                && investmentOnlyAccounts.get(0).getBalance().compareTo(BigDecimal.ZERO) > 0
+                && investments.isEmpty();
+        model.addAttribute("canRegisterExistingBalance", canRegisterExistingBalance);
+        model.addAttribute("singleInvestmentAccount", canRegisterExistingBalance ? investmentOnlyAccounts.get(0) : null);
+
         return "app/investments/index";
+    }
+
+    @GetMapping("/composition")
+    public String compositionForm(@RequestParam Long accountId, Model model, RedirectAttributes redirectAttributes) {
+        Long userId = SecurityUtil.getCurrentUserId();
+        var accountOpt = accountService.findByUserId(userId).stream()
+                .filter(a -> a.getType() == AccountType.INVESTIMENTO && a.getId().equals(accountId))
+                .findFirst();
+        if (accountOpt.isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "Conta de investimento não encontrada.");
+            return "redirect:/app/investments";
+        }
+        Account account = accountOpt.get();
+        if (account.getBalance().compareTo(BigDecimal.ZERO) <= 0) {
+            redirectAttributes.addFlashAttribute("error", "A conta não possui saldo para compor.");
+            return "redirect:/app/investments";
+        }
+        if (!investmentService.findByUserId(userId).isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "Já existem posições. Não é possível definir composição.");
+            return "redirect:/app/investments";
+        }
+
+        InitialCompositionRequest request = new InitialCompositionRequest();
+        request.setDestinationAccountId(accountId);
+        request.setPositions(new ArrayList<>(List.of(new PositionLineDto())));
+
+        model.addAttribute("compositionRequest", request);
+        model.addAttribute("account", account);
+        model.addAttribute("investmentTypes", InvestmentType.values());
+        model.addAttribute("rentabilityKinds", RentabilityKind.values());
+        return "app/investments/composition";
+    }
+
+    @PostMapping("/register-composition")
+    public String registerComposition(
+            @Valid @ModelAttribute("compositionRequest") InitialCompositionRequest compositionRequest,
+            BindingResult bindingResult,
+            RedirectAttributes redirectAttributes,
+            Model model) {
+        Long userId = SecurityUtil.getCurrentUserId();
+
+        if (bindingResult.hasErrors()) {
+            Long accountId = compositionRequest.getDestinationAccountId();
+            var accountOpt = accountService.findByUserId(userId).stream()
+                    .filter(a -> a.getType() == AccountType.INVESTIMENTO && a.getId().equals(accountId))
+                    .findFirst();
+            if (accountOpt.isPresent()) {
+                model.addAttribute("account", accountOpt.get());
+            }
+            model.addAttribute("investmentTypes", InvestmentType.values());
+            model.addAttribute("rentabilityKinds", RentabilityKind.values());
+            return "app/investments/composition";
+        }
+
+        try {
+            investmentService.registerComposition(userId, compositionRequest.getDestinationAccountId(), compositionRequest.getPositions());
+            redirectAttributes.addFlashAttribute("success", "Composição do saldo registrada com sucesso!");
+            return "redirect:/app/investments";
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/app/investments";
+        } catch (jakarta.persistence.EntityNotFoundException e) {
+            redirectAttributes.addFlashAttribute("error", "Conta de investimento não encontrada.");
+            return "redirect:/app/investments";
+        }
     }
 
     @GetMapping("/new")
@@ -110,14 +198,7 @@ public class InvestmentController {
         Long userId = SecurityUtil.getCurrentUserId();
 
         if (bindingResult.hasErrors()) {
-            List<Account> accounts = accountService.findByUserId(userId);
-            List<Account> investmentAccounts = accounts.stream()
-                    .filter(a -> a.getType() == AccountType.CORRETORA || a.getType() == AccountType.INVESTIMENTO)
-                    .toList();
-            model.addAttribute("accounts", accounts);
-            model.addAttribute("investmentAccounts", investmentAccounts);
-            model.addAttribute("investmentTypes", InvestmentType.values());
-            model.addAttribute("rentabilityKinds", RentabilityKind.values());
+            repopulateForm(model, userId);
             return "app/investments/form";
         }
 
@@ -126,17 +207,25 @@ public class InvestmentController {
             redirectAttributes.addFlashAttribute("success", "Investimento cadastrado com sucesso!");
             return "redirect:/app/investments";
         } catch (IllegalArgumentException e) {
-            List<Account> accounts = accountService.findByUserId(userId);
-            List<Account> investmentAccounts = accounts.stream()
-                    .filter(a -> a.getType() == AccountType.CORRETORA || a.getType() == AccountType.INVESTIMENTO)
-                    .toList();
-            model.addAttribute("accounts", accounts);
-            model.addAttribute("investmentAccounts", investmentAccounts);
-            model.addAttribute("investmentTypes", InvestmentType.values());
-            model.addAttribute("rentabilityKinds", RentabilityKind.values());
+            repopulateForm(model, userId);
             model.addAttribute("error", e.getMessage());
             return "app/investments/form";
+        } catch (jakarta.persistence.EntityNotFoundException e) {
+            repopulateForm(model, userId);
+            model.addAttribute("error", "Conta de origem ou destino não encontrada.");
+            return "app/investments/form";
         }
+    }
+
+    private void repopulateForm(Model model, Long userId) {
+        List<Account> accounts = accountService.findByUserId(userId);
+        List<Account> investmentAccounts = accounts.stream()
+                .filter(a -> a.getType() == AccountType.CORRETORA || a.getType() == AccountType.INVESTIMENTO)
+                .toList();
+        model.addAttribute("accounts", accounts);
+        model.addAttribute("investmentAccounts", investmentAccounts);
+        model.addAttribute("investmentTypes", InvestmentType.values());
+        model.addAttribute("rentabilityKinds", RentabilityKind.values());
     }
 
     @PostMapping("/{id}/delete")
@@ -144,5 +233,18 @@ public class InvestmentController {
         investmentService.delete(id, SecurityUtil.getCurrentUserId());
         redirectAttributes.addFlashAttribute("success", "Investimento excluído com sucesso!");
         return "redirect:/app/investments";
+    }
+
+    @PostMapping("/register-existing-balance")
+    public String registerExistingBalance(RedirectAttributes redirectAttributes, Model model) {
+        Long userId = SecurityUtil.getCurrentUserId();
+        try {
+            investmentService.registerExistingBalance(userId);
+            redirectAttributes.addFlashAttribute("success", "Saldo existente registrado como posição inicial. Edite ou adicione mais posições para detalhar.");
+            return "redirect:/app/investments";
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/app/investments";
+        }
     }
 }

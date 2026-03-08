@@ -42,3 +42,11 @@ logging:
   level:
     com.mindcash: DEBUG
     org.springframework.security: INFO
+
+app:
+  investments:
+    cdi-annual-rate: 12.0
+    daily-update-cron: "0 0 2 * * ?"
+    # API de cotações para ações (job diário). Obtenha chave em https://www.alphavantage.co/support/#api-key
+    stock-api-enabled: false
+    alpha-vantage-api-key: "${ALPHA_VANTAGE_API_KEY}"

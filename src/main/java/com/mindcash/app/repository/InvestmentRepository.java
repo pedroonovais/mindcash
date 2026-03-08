@@ -13,7 +13,7 @@ public interface InvestmentRepository extends JpaRepository<Investment, Long> {
     @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"sourceAccount", "destinationAccount"})
     List<Investment> findByUserIdOrderByDateDesc(Long userId);
 
-    @Query("SELECT i FROM Investment i JOIN FETCH i.sourceAccount JOIN FETCH i.destinationAccount WHERE i.user.id = :userId ORDER BY i.date DESC")
+    @Query("SELECT i FROM Investment i LEFT JOIN FETCH i.sourceAccount JOIN FETCH i.destinationAccount WHERE i.user.id = :userId ORDER BY i.date DESC")
     List<Investment> findByUserIdWithAccountsOrderByDateDesc(Long userId);
 
     Optional<Investment> findByIdAndUserId(Long id, Long userId);
@@ -21,6 +21,12 @@ public interface InvestmentRepository extends JpaRepository<Investment, Long> {
     @Query("SELECT COALESCE(SUM(i.amount), 0) FROM Investment i WHERE i.user.id = :userId")
     BigDecimal sumAmountByUserId(Long userId);
 
+    @Query("SELECT COALESCE(SUM(i.currentValue), 0) FROM Investment i WHERE i.user.id = :userId")
+    BigDecimal sumCurrentValueByUserId(Long userId);
+
     @Query("SELECT i.investmentType, SUM(i.amount) FROM Investment i WHERE i.user.id = :userId GROUP BY i.investmentType")
     List<Object[]> sumAmountByUserIdGroupByInvestmentType(Long userId);
+
+    @Query("SELECT i.investmentType, SUM(i.currentValue) FROM Investment i WHERE i.user.id = :userId GROUP BY i.investmentType")
+    List<Object[]> sumCurrentValueByUserIdGroupByInvestmentType(Long userId);
 }

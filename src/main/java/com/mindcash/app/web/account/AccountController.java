@@ -47,9 +47,17 @@ public class AccountController {
             return "app/accounts/index";
         }
 
-        accountService.create(accountRequest, SecurityUtil.getCurrentUserId());
-        redirectAttributes.addFlashAttribute("success", "Conta criada com sucesso!");
-        return "redirect:/app/accounts";
+        try {
+            accountService.create(accountRequest, SecurityUtil.getCurrentUserId());
+            redirectAttributes.addFlashAttribute("success", "Conta criada com sucesso!");
+            return "redirect:/app/accounts";
+        } catch (IllegalArgumentException e) {
+            Long userId = SecurityUtil.getCurrentUserId();
+            model.addAttribute("accounts", accountService.findByUserId(userId));
+            model.addAttribute("accountTypes", AccountType.values());
+            model.addAttribute("error", e.getMessage());
+            return "app/accounts/index";
+        }
     }
 
     @GetMapping("/{id}/edit")
@@ -83,9 +91,17 @@ public class AccountController {
             return "app/accounts/edit";
         }
 
-        accountService.update(id, accountRequest, SecurityUtil.getCurrentUserId());
-        redirectAttributes.addFlashAttribute("success", "Conta atualizada com sucesso!");
-        return "redirect:/app/accounts";
+        try {
+            accountService.update(id, accountRequest, SecurityUtil.getCurrentUserId());
+            redirectAttributes.addFlashAttribute("success", "Conta atualizada com sucesso!");
+            return "redirect:/app/accounts";
+        } catch (IllegalArgumentException e) {
+            Account account = accountService.findByIdAndUserId(id, SecurityUtil.getCurrentUserId());
+            model.addAttribute("account", account);
+            model.addAttribute("accountTypes", AccountType.values());
+            model.addAttribute("error", e.getMessage());
+            return "app/accounts/edit";
+        }
     }
 
     @PostMapping("/{id}/delete")
