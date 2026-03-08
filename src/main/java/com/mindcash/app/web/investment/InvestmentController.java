@@ -25,6 +25,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 @Controller
 @RequestMapping("/app/investments")
 public class InvestmentController {
@@ -91,6 +94,12 @@ public class InvestmentController {
         }
         model.addAttribute("projectionValues", projectionValues);
         model.addAttribute("projectionRates", projectionRates);
+        try {
+            Map<String, List<Double>> projectionData = Map.of("values", projectionValues, "rates", projectionRates);
+            model.addAttribute("projectionDataJson", new ObjectMapper().writeValueAsString(projectionData));
+        } catch (JsonProcessingException e) {
+            model.addAttribute("projectionDataJson", "{\"values\":[],\"rates\":[]}");
+        }
 
         List<Account> investmentOnlyAccounts = accountService.findByUserId(userId).stream()
                 .filter(a -> a.getType() == AccountType.INVESTIMENTO)

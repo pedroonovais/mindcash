@@ -32,12 +32,12 @@ public class DashboardService {
         LocalDate endOfMonth = now.withDayOfMonth(now.lengthOfMonth());
 
         BigDecimal totalBalance = accountService.getTotalBalance(userId);
-        BigDecimal totalIncome = transactionRepository.sumByUserAndTypeAndPeriod(
+        BigDecimal totalIncome = transactionRepository.sumByUserAndTypeAndPeriodExcludingInvestments(
                 userId, TransactionType.CREDIT, startOfMonth, endOfMonth);
-        BigDecimal totalExpense = transactionRepository.sumByUserAndTypeAndPeriod(
+        BigDecimal totalExpense = transactionRepository.sumByUserAndTypeAndPeriodExcludingInvestments(
                 userId, TransactionType.DEBIT, startOfMonth, endOfMonth);
 
-        List<Object[]> topExpenseCategories = transactionRepository.findTopCategoriesByPeriod(
+        List<Object[]> topExpenseCategories = transactionRepository.findTopCategoriesByPeriodExcludingInvestments(
                 userId, TransactionType.DEBIT, startOfMonth, endOfMonth);
 
         Map<String, BigDecimal> categoryBreakdown = new LinkedHashMap<>();

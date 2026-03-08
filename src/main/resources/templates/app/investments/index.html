@@ -4,7 +4,6 @@
       lang="pt-br">
 <head>
     <title>Investimentos</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
 <body>
 
@@ -12,11 +11,11 @@
     <div class="flex items-center justify-between w-full flex-wrap gap-4">
         <div class="flex items-center gap-4 flex-wrap">
             <h2 class="text-lg font-semibold text-slate-900 dark:text-white">Investimentos</h2>
-            <div class="flex gap-1 rounded-lg border border-slate-200 dark:border-slate-700 p-0.5">
+            <!--<div class="flex gap-1 rounded-lg border border-slate-200 dark:border-slate-700 p-0.5">
                 <button type="button" class="px-3 py-1.5 text-xs font-medium rounded-md bg-accent-emerald text-white">1M</button>
                 <button type="button" class="px-3 py-1.5 text-xs font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md">1A</button>
                 <button type="button" class="px-3 py-1.5 text-xs font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md">TUDO</button>
-            </div>
+            </div>-->
         </div>
         <a th:href="@{/app/investments/new}"
            class="bg-accent-emerald hover:bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2">
@@ -28,29 +27,23 @@
 
 <div class="content">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        <!-- Patrimônio total -->
+        <!-- Patrimônio total com gráfico de evolução mês a mês -->
         <div class="bg-white dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-sm p-6">
             <h3 class="text-sm font-medium text-slate-600 dark:text-slate-400 uppercase tracking-wider">Patrimônio Total</h3>
             <p class="text-2xl font-bold text-accent-emerald mt-2"
                th:text="'R$ ' + ${#numbers.formatDecimal(totalCurrentValue != null ? totalCurrentValue : 0, 1, 'POINT', 2, 'COMMA')}"></p>
             <p class="text-xs text-slate-600 dark:text-slate-400 mt-1">Custo de aquisição: R$ <span th:text="${#numbers.formatDecimal(totalInvested != null ? totalInvested : 0, 1, 'POINT', 2, 'COMMA')}"></span></p>
-        </div>
-
-        <!-- Evolução da carteira -->
-        <div class="bg-white dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-sm p-6">
-            <h3 class="text-sm font-medium text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-4">Evolução da Carteira</h3>
-            <div class="h-48" th:if="${!#lists.isEmpty(evolutionData)}">
-                <canvas id="chartEvolution"></canvas>
+            <div class="mt-4 min-h-[200px]" th:if="${!#lists.isEmpty(evolutionData)}">
+                <p class="text-xs text-slate-500 dark:text-slate-400 mb-2">Evolução do patrimônio (acumulado por mês)</p>
+                <canvas id="chartPatrimonyEvolution"></canvas>
             </div>
-            <p th:if="${#lists.isEmpty(evolutionData)}" class="text-sm text-slate-500 dark:text-slate-400 py-4">Cadastre investimentos para ver a evolução acumulada.</p>
+            <p th:if="${#lists.isEmpty(evolutionData)}" class="text-sm text-slate-500 dark:text-slate-400 mt-4">Cadastre investimentos para ver a evolução mês a mês.</p>
         </div>
-    </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        <!-- Alocação de ativos -->
+        <!-- Alocação de ativos (gráfico de pizza) -->
         <div class="bg-white dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-sm p-6">
             <h3 class="text-sm font-medium text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-4">Alocação de Ativos</h3>
-            <div class="h-48 flex items-center justify-center" th:if="${!#lists.isEmpty(allocationByType)}">
+            <div class="h-52 flex items-center justify-center" th:if="${!#lists.isEmpty(allocationByType)}">
                 <canvas id="chartAllocation"></canvas>
             </div>
             <div th:if="${!#lists.isEmpty(allocationByType)}" class="mt-4 space-y-2">
@@ -61,28 +54,35 @@
             </div>
             <p th:if="${#lists.isEmpty(allocationByType)}" class="text-sm text-slate-500 dark:text-slate-400 py-4">Nenhum investimento por tipo ainda.</p>
         </div>
+    </div>
 
-        <!-- Projeção do patrimônio -->
+    <!-- Projeção do patrimônio (largura maior) -->
+    <div class="grid grid-cols-1 gap-6 mb-6">
         <div class="bg-white dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-sm p-6">
             <h3 class="text-sm font-medium text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-4">Projeção do Patrimônio</h3>
-            <p class="text-xs text-slate-500 dark:text-slate-400 mb-3">Projeção com base no patrimônio atual e na rentabilidade de cada posição (sem informar taxa).</p>
-            <div class="grid grid-cols-2 gap-3 mb-3">
-                <div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mb-3">Projeção com base no patrimônio atual e na rentabilidade de cada posição.</p>
+            <div class="flex flex-wrap items-end gap-4 mb-4">
+                <div class="w-32">
                     <label class="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Período</label>
                     <input type="number" id="projPeriod" min="1" value="12" class="w-full px-3 py-2 border border-slate-200 dark:border-slate-600 rounded-lg text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white"/>
                 </div>
-                <div>
+                <div class="w-36">
                     <label class="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Unidade</label>
                     <select id="projUnit" class="w-full px-3 py-2 border border-slate-200 dark:border-slate-600 rounded-lg text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white">
                         <option value="months">Meses</option>
                         <option value="years">Anos</option>
                     </select>
                 </div>
+                <button type="button" id="btnProj" class="bg-accent-emerald hover:bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors h-[42px]">Calcular</button>
             </div>
-            <button type="button" id="btnProj" class="w-full bg-accent-emerald hover:bg-emerald-600 text-white py-2 rounded-lg text-sm font-semibold transition-colors">Calcular</button>
-            <p id="projResult" class="mt-3 text-sm font-semibold text-accent-emerald hidden"></p>
+            <p id="projResult" class="mb-3 text-sm font-semibold text-accent-emerald hidden"></p>
+            <div id="projChartContainer" class="hidden mt-4 min-h-[260px]">
+                <canvas id="chartProjection"></canvas>
+            </div>
         </div>
     </div>
+
+    <script type="application/json" id="projectionData" th:utext="${projectionDataJson}">{"values":[],"rates":[]}</script>
 
     <!-- Minha carteira detalhada -->
     <div class="bg-white dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-sm overflow-hidden">
@@ -156,13 +156,12 @@
             </table>
         </div>
     </div>
-</div>
 
-<script th:inline="javascript" th:if="${!#lists.isEmpty(evolutionLabels)}">
+    <script th:inline="javascript" th:if="${!#lists.isEmpty(evolutionLabels)}">
     (function() {
         var labels = /*[[${evolutionLabels}]]*/ [];
         var values = /*[[${evolutionValues}]]*/ [];
-        var ctx = document.getElementById('chartEvolution');
+        var ctx = document.getElementById('chartPatrimonyEvolution');
         if (ctx && labels.length) {
             new Chart(ctx.getContext('2d'), {
                 type: 'line',
@@ -172,14 +171,15 @@
                         label: 'Patrimônio acumulado',
                         data: values,
                         borderColor: '#10b981',
-                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        backgroundColor: 'rgba(16, 185, 129, 0.15)',
                         fill: true,
                         tension: 0.3
                     }]
                 },
                 options: {
                     responsive: true,
-                    maintainAspectRatio: false,
+                    maintainAspectRatio: true,
+                    aspectRatio: 2,
                     plugins: { legend: { display: false } },
                     scales: {
                         y: {
@@ -199,52 +199,151 @@
     (function() {
         var labels = /*[[${allocationLabels}]]*/ [];
         var data = /*[[${allocationPercents}]]*/ [];
-        var colors = ['#10b981', '#3b82f6', '#8b5cf6', '#f59e0b', '#ef4444', '#6b7280'];
+        var colors = ['#10b981', '#3b82f6', '#8b5cf6', '#f59e0b', '#ef4444', '#06b6d4', '#ec4899'];
         var ctx = document.getElementById('chartAllocation');
         if (ctx && data.length) {
             new Chart(ctx.getContext('2d'), {
-                type: 'doughnut',
+                type: 'pie',
                 data: {
                     labels: labels,
-                    datasets: [{ data: data, backgroundColor: colors.slice(0, data.length), borderWidth: 0 }]
+                    datasets: [{
+                        data: data,
+                        backgroundColor: colors.slice(0, data.length),
+                        borderWidth: 2,
+                        borderColor: 'rgba(30, 41, 59, 0.5)'
+                    }]
                 },
                 options: {
                     responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { position: 'bottom' } },
-                    cutout: '65%'
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
                 }
             });
         }
     })();
 </script>
 
-<script th:inline="javascript">
-    (function() {
-        var projectionValues = /*[[${projectionValues}]]*/ [];
-        var projectionRates = /*[[${projectionRates}]]*/ [];
-        var btn = document.getElementById('btnProj');
-        var resultEl = document.getElementById('projResult');
-        if (!btn || !resultEl) return;
-        btn.addEventListener('click', function() {
-            var period = parseInt(document.getElementById('projPeriod').value, 10) || 0;
-            var unit = document.getElementById('projUnit').value;
-            if (period <= 0) {
-                resultEl.textContent = 'Informe o período.';
-                resultEl.classList.remove('hidden');
-                return;
-            }
-            var years = unit === 'years' ? period : period / 12;
+<script>
+(function() {
+    var projectionValues = [];
+    var projectionRates = [];
+    var projectionDataEl = document.getElementById('projectionData');
+    if (projectionDataEl && projectionDataEl.textContent) {
+        try {
+            var data = JSON.parse(projectionDataEl.textContent);
+            if (Array.isArray(data.values)) projectionValues = data.values;
+            if (Array.isArray(data.rates)) projectionRates = data.rates;
+        } catch (e) {}
+    }
+
+    function buildProjectionData(periodMonths) {
+        var labels = [];
+        var values = [];
+        var currentValues = projectionValues.slice();
+        var rates = projectionRates.slice();
+        if (currentValues.length === 0 || currentValues.length !== rates.length) return { labels: [], values: [] };
+        var maxPoints = 24;
+        var step = Math.max(1, Math.floor(periodMonths / maxPoints));
+        for (var m = 0; m <= periodMonths; m += step) {
+            labels.push(m === 0 ? 'Hoje' : (m === 1 ? '1 mês' : m + ' meses'));
+            var years = m / 12;
             var sum = 0;
-            for (var i = 0; i < projectionValues.length; i++) {
-                var cv = projectionValues[i] || 0;
-                var r = projectionRates[i] || 0;
-                sum += cv * Math.pow(1 + r, years);
+            for (var i = 0; i < currentValues.length; i++) {
+                sum += (currentValues[i] || 0) * Math.pow(1 + (rates[i] || 0), years);
             }
-            resultEl.textContent = 'Patrimônio projetado: R$ ' + sum.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            values.push(sum);
+        }
+        var lastMonth = (labels.length - 1) * step;
+        if (periodMonths > 0 && lastMonth < periodMonths) {
+            labels.push(periodMonths === 1 ? '1 mês' : periodMonths + ' meses');
+            var y = periodMonths / 12;
+            var s = 0;
+            for (var j = 0; j < currentValues.length; j++) {
+                s += (currentValues[j] || 0) * Math.pow(1 + (rates[j] || 0), y);
+            }
+            values.push(s);
+        }
+        return { labels: labels, values: values };
+    }
+
+    var btn = document.getElementById('btnProj');
+    var resultEl = document.getElementById('projResult');
+    var chartContainer = document.getElementById('projChartContainer');
+    var chartProjection = null;
+
+    if (!btn || !resultEl) return;
+
+    btn.addEventListener('click', function() {
+        var periodInput = document.getElementById('projPeriod');
+        var unitSelect = document.getElementById('projUnit');
+        var period = parseInt(periodInput && periodInput.value ? periodInput.value : 0, 10) || 0;
+        var unit = (unitSelect && unitSelect.value) ? unitSelect.value : 'months';
+        if (period <= 0) {
+            resultEl.textContent = 'Informe um período válido (maior que zero).';
             resultEl.classList.remove('hidden');
-        });
-    })();
+            if (chartContainer) chartContainer.classList.add('hidden');
+            return;
+        }
+        var periodMonths = unit === 'years' ? period * 12 : period;
+        var years = periodMonths / 12;
+        var sum = 0;
+        for (var i = 0; i < projectionValues.length; i++) {
+            var cv = projectionValues[i] || 0;
+            var r = projectionRates[i] || 0;
+            sum += cv * Math.pow(1 + r, years);
+        }
+        resultEl.textContent = 'Patrimônio projetado em ' + periodMonths + ' meses: R$ ' + sum.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        resultEl.classList.remove('hidden');
+
+        if (chartContainer && typeof Chart !== 'undefined') {
+            var proj = buildProjectionData(periodMonths);
+            if (proj.labels.length > 0 && proj.values.length > 0) {
+                chartContainer.classList.remove('hidden');
+                var canvas = document.getElementById('chartProjection');
+                if (chartProjection) {
+                    chartProjection.destroy();
+                    chartProjection = null;
+                }
+                setTimeout(function() {
+                    if (!canvas) return;
+                    chartProjection = new Chart(canvas.getContext('2d'), {
+                        type: 'line',
+                        data: {
+                            labels: proj.labels,
+                            datasets: [{
+                                label: 'Projeção do patrimônio',
+                                data: proj.values,
+                                borderColor: '#10b981',
+                                backgroundColor: 'rgba(16, 185, 129, 0.15)',
+                                fill: true,
+                                tension: 0.3
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: true,
+                            aspectRatio: 2.2,
+                            plugins: { legend: { display: false } },
+                            scales: {
+                                y: {
+                                    beginAtZero: false,
+                                    grid: { color: 'rgba(148, 163, 184, 0.2)' },
+                                    ticks: { color: '#94a3b8', callback: function(v) { return 'R$ ' + v.toLocaleString('pt-BR'); } }
+                                },
+                                x: { grid: { display: false }, ticks: { color: '#94a3b8', maxRotation: 45 } }
+                            }
+                        }
+                    });
+                }, 50);
+            } else {
+                chartContainer.classList.add('hidden');
+            }
+        }
+    });
+})();
 </script>
+</div>
 </body>
 </html>

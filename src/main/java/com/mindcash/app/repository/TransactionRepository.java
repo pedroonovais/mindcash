@@ -30,6 +30,12 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
            "AND (t.recurrenceParent IS NOT NULL OR t.recurrenceType IS NULL)")
     BigDecimal sumByUserAndTypeAndPeriod(Long userId, TransactionType type, LocalDate start, LocalDate end);
 
+    /** Soma para dashboard: exclui transações vinculadas a investimentos (receitas/despesas do mês = fluxo do dia a dia). */
+    @Query("SELECT COALESCE(SUM(t.amount), 0) FROM Transaction t " +
+           "WHERE t.user.id = :userId AND t.type = :type AND t.date BETWEEN :start AND :end " +
+           "AND (t.recurrenceParent IS NOT NULL OR t.recurrenceType IS NULL) AND t.investment IS NULL")
+    BigDecimal sumByUserAndTypeAndPeriodExcludingInvestments(Long userId, TransactionType type, LocalDate start, LocalDate end);
+
     /** Top categorias por valor no período (apenas transações reais). */
     @Query("SELECT t.category.name, SUM(t.amount) FROM Transaction t " +
            "WHERE t.user.id = :userId AND t.type = :type AND t.date BETWEEN :start AND :end " +
@@ -37,6 +43,14 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
            "AND (t.recurrenceParent IS NOT NULL OR t.recurrenceType IS NULL) " +
            "GROUP BY t.category.name ORDER BY SUM(t.amount) DESC")
     List<Object[]> findTopCategoriesByPeriod(Long userId, TransactionType type, LocalDate start, LocalDate end);
+
+    /** Top categorias para dashboard: exclui transações vinculadas a investimentos. */
+    @Query("SELECT t.category.name, SUM(t.amount) FROM Transaction t " +
+           "WHERE t.user.id = :userId AND t.type = :type AND t.date BETWEEN :start AND :end " +
+           "AND t.category IS NOT NULL " +
+           "AND (t.recurrenceParent IS NOT NULL OR t.recurrenceType IS NULL) AND t.investment IS NULL " +
+           "GROUP BY t.category.name ORDER BY SUM(t.amount) DESC")
+    List<Object[]> findTopCategoriesByPeriodExcludingInvestments(Long userId, TransactionType type, LocalDate start, LocalDate end);
 
     List<Transaction> findByUserIdAndDateBetweenOrderByDateDesc(Long userId, LocalDate start, LocalDate end);
 
