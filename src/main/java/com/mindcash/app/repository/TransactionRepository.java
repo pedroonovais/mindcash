@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
@@ -71,4 +72,8 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     Page<Transaction> findRecurrenceTemplatesByUserId(Long userId, Pageable pageable);
 
     List<Transaction> findByInvestmentId(Long investmentId);
+
+    /** Última data em que existe transação de rendimento para o investimento (para backfill de dias faltantes). */
+    @Query("SELECT MAX(t.date) FROM Transaction t WHERE t.investment.id = :investmentId AND t.type = :type")
+    Optional<LocalDate> findMaxDateByInvestmentIdAndType(@Param("investmentId") Long investmentId, @Param("type") TransactionType type);
 }

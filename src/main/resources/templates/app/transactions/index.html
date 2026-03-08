@@ -44,8 +44,8 @@
                     <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400" th:text="${tx.category?.name} ?: '—'"></td>
                     <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400" th:text="${tx.account.name}"></td>
                     <td class="px-6 py-4 text-sm font-semibold text-right"
-                        th:classappend="${tx.type.name() == 'CREDIT'} ? 'text-accent-emerald' : 'text-red-500'"
-                        th:text="${(tx.type.name() == 'CREDIT' ? '+' : '-') + ' R$ ' + #numbers.formatDecimal(tx.amount, 1, 'POINT', 2, 'COMMA')}">
+                        th:classappend="${tx.type.name() == 'CREDIT' or tx.type.name() == 'RENDIMENTO'} ? 'text-accent-emerald' : 'text-red-500'"
+                        th:text="${(tx.type.name() == 'CREDIT' or tx.type.name() == 'RENDIMENTO' ? '+' : '-') + ' R$ ' + #numbers.formatDecimal(tx.amount, 1, 'POINT', 2, 'COMMA')}">
                     </td>
                     <td class="px-6 py-4 text-right">
                         <form th:action="@{/app/transactions/{id}/delete(id=${tx.id})}" method="post"

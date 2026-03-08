@@ -152,7 +152,7 @@ public class TransactionService {
 
     private void applyBalanceChange(Account account, TransactionType type, BigDecimal amount) {
         switch (type) {
-            case CREDIT -> account.setBalance(account.getBalance().add(amount));
+            case CREDIT, RENDIMENTO -> account.setBalance(account.getBalance().add(amount));
             case DEBIT -> account.setBalance(account.getBalance().subtract(amount));
             case TRANSFER -> { /* Saldo ajustado individualmente em transferências futuras */ }
         }
@@ -160,7 +160,7 @@ public class TransactionService {
 
     private void reverseBalanceChange(Account account, TransactionType type, BigDecimal amount) {
         switch (type) {
-            case CREDIT -> account.setBalance(account.getBalance().subtract(amount));
+            case CREDIT, RENDIMENTO -> account.setBalance(account.getBalance().subtract(amount));
             case DEBIT -> account.setBalance(account.getBalance().add(amount));
             case TRANSFER -> { }
         }

@@ -10,6 +10,7 @@ import com.mindcash.app.model.InvestmentType;
 import com.mindcash.app.model.RentabilityKind;
 import com.mindcash.app.service.AccountService;
 import com.mindcash.app.service.InvestmentService;
+import com.mindcash.app.service.InvestmentYieldUpdateService;
 import com.mindcash.app.util.SecurityUtil;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
@@ -34,15 +35,20 @@ public class InvestmentController {
 
     private final InvestmentService investmentService;
     private final AccountService accountService;
+    private final InvestmentYieldUpdateService investmentYieldUpdateService;
 
-    public InvestmentController(InvestmentService investmentService, AccountService accountService) {
+    public InvestmentController(InvestmentService investmentService, AccountService accountService,
+                                 InvestmentYieldUpdateService investmentYieldUpdateService) {
         this.investmentService = investmentService;
         this.accountService = accountService;
+        this.investmentYieldUpdateService = investmentYieldUpdateService;
     }
 
     @GetMapping
     public String index(Model model) {
         Long userId = SecurityUtil.getCurrentUserId();
+        investmentYieldUpdateService.ensureYieldTransactionsUpToToday(userId);
+
         List<Investment> investments = investmentService.findByUserId(userId);
         BigDecimal totalCurrentValue = investmentService.totalCurrentValueByUserId(userId);
         List<Object[]> allocationByType = investmentService.sumCurrentValueByType(userId);
